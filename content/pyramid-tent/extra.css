@@ -1,0 +1,14 @@
+#calcInputs {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+}
+
+input {
+  width: 120px;
+}
+
+.inputDivs {
+  margin: 10px 50px;
+  width: 160px;
+}

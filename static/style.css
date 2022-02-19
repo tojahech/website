@@ -1,0 +1,162 @@
+/* Reset */
+
+html, body {
+  margin: 0px;
+  padding: 0px;
+}
+
+/* Page Layout */
+
+#content {
+  width: auto;
+  max-width: 600px;
+  position: static;
+  margin: 60px auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+#header {
+  position: static;
+  margin: 60px auto;
+}
+
+#header a img {
+  margin: 0 auto;
+  max-width: 100%;
+  width: 140px;
+}
+
+@media screen and (max-width: 1000px) {
+  #content {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  #header {
+    width: 140px;
+    max-width: 140px;
+  }
+}
+
+
+/* Fonts, text and text spacing */
+
+body, a:link, a:visited, a:hover {
+	font-size: 16px;
+  color: #333333;
+}
+
+body, input {
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: .02em;
+}
+
+h1,h2,h3 {
+  font-family: 'Lora', serif;
+  font-variant: small-caps;
+	font-weight: bold;
+}
+
+p {
+  margin: 20px 0;
+  line-height: 1.6;
+}
+
+h1 {
+  font-size: 280%;
+  text-align: center;
+  margin-top: 60px;
+  margin-bottom: 60px;
+}
+
+h2 {
+  font-size: 180%;
+  margin-top: 60px;
+  margin-bottom: 30px;
+}
+
+h3 {
+  font-size: 120%;
+  margin-top: 60px;
+  margin-bottom: 30px;
+}
+
+strong {
+  font-weight: bold;
+}
+
+
+/* Images */
+
+img, canvas, video {
+    display: block;
+    margin: 40px auto;
+    max-width: 90%;
+}
+
+/* Horizonal Rules */
+
+.hr {
+  display: block;
+  width: 30%;
+  height: 2px;
+  background: #333333;
+  margin: 80px auto;
+}
+
+/* Lists */
+
+ul,ol {
+  line-height: 1.6;
+  list-style-type: square;
+}
+
+/* Input elements */
+
+input {
+  background: #649861;
+  border: 2px solid #333333;
+	margin: 20px;
+	padding: 10px;
+}
+
+/* Code blocks */
+
+pre {
+  border: 6px solid #5c6c7c;
+	margin: 20px 0;
+  line-height: 1.6;
+  overflow: auto;
+}
+
+code {
+  display: inline-block;
+  margin: 20px;
+}
+
+/* Quotes */
+
+blockquote {
+  max-width: 60%;
+  margin-left: auto;
+  margin-right: auto;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Tables */
+
+td, th {
+  padding: 15px;
+}
+
+/* Section breaks */
+
+hr {
+  border: 0;
+  height: 4px;
+  color: #333333;
+  background: #333333;
+  margin: 60px 0;
+}
+

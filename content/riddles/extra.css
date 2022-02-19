@@ -1,0 +1,9 @@
+.solution {
+  margin: 0px;
+  padding: 5px 20px;
+  border: 2px solid #333333;
+}
+
+.solution h3 {
+  margin-top: 30px;
+}

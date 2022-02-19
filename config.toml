@@ -1,0 +1,9 @@
+baseURL = 'http://tojahech.com/'
+languageCode = 'en-us'
+title = 'tojahech'
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
