@@ -1,0 +1,29 @@
+<!doctype html>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<html lang="en">
+  <title>Site - Page</title>
+
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora&display=swap"> 
+
+  <body class="layout-base">
+      <div class="sidebar-wrapper">
+        <div class="sidebar">
+          <ul>
+            <li>Thing 1</li>
+            <li>Thing 2</li>
+            <li>Thing 3</li>
+            <li>Thing 4</li>
+        </div>
+      </div>
+      <div class="content-wrapper">
+        <div class="content">
+          {% block content %} {% endblock %}
+        </div>
+      </div>
+  </body>
+</html>

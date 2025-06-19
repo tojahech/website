@@ -1,0 +1,50 @@
+@charset "UTF-8";
+
+@layer reset, tokens, layout;
+
+@import "/css/reset.css" layer(reset);
+@import "/css/tokens.css" layer(tokens);
+
+@layer layout {
+  .layout-base {
+    display: grid;
+    grid-template-columns: 1fr;
+    background-color: red;
+    width: 100%;
+    column-gap: 4px;
+  }
+
+  @media screen and (min-width: 800px) {
+    .layout-base {
+      height: 100vh;
+      grid-template-columns: 1fr 2fr;
+    }
+  }
+
+  .layout-base .sidebar-wrapper {
+    background-color: blue;
+    border-right: 4px solid #333;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+  }
+
+  .sidebar {
+    background: white;
+  }
+
+  .layout-base .content-wrapper {
+    background-color: green;
+    padding: 48px;
+    overflow-y: scroll;
+    display: flex;
+    justify-content: center;
+  }
+
+  .content {
+    background: white;
+    max-width: 600px;
+    height: fit-content;
+  }
+}

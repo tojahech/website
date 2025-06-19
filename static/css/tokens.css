@@ -1,0 +1,78 @@
+:root {
+  /* Colours */
+  --canopy_20: #5d6f44;
+  --canopy_40: #839b5f;
+  --canopy_60: #b2c29b;
+  --canopy_80: #c6d1b5;
+
+  --shadow_10: #1e1c1b;
+  --shadow_20: #211e1d;
+  --shadow_30: #2e2b29;
+  --shadow_40: #3f3734;
+
+  --foilage_30: #456d2d;
+  --foilage_50: #6aa744;
+  --foilage_70: #82bd5e;
+
+  --soil_10: #211a10;
+  --soil_30: #463724;
+  --soil_50: #725a3b;
+  --soil_70: #a07f53;
+  --soil_90: #c0a886;
+
+  --waterfalls_40: #5e8990;
+  --waterfalls_60: #83a6b9;
+  --waterfalls_70: #b9cad6;
+  --waterfalls_90: #dae4ed;
+
+  --sunray_60: #ddc669;
+  --sunray_80: #e9ddaf;
+
+  --lorikeet_g_50: #45af38;
+  --lorikeet_g_70: #6bcc5f;
+  --lorikeet_b_50: #3c31e1;
+  --lorikeet_b_70: #695fff;
+  --lorikeet_r_50: #e42823;
+  --lorikeet_r_70: #f35c58;
+  --lorikeet_o_50: #f6c43f;
+  --lorikeet_o_70: #f7cc58;
+  --lorikeet_y_50: #fef435;
+  --lorikeet_y_70: #fef769;
+
+  /* Typography */
+
+  --font-stack-serif: "Lora", sans-serif;
+  --font-stack-sans: "Montserrat", sans-serif;
+
+  --font-size-base: 16px;
+
+  --font-size-xxs: 0.625rem;
+  --font-size-xs: 0.75rem;
+  --font-size-s: 0.875rem;
+  --font-size-m: 1rem;
+  --font-size-l: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-xxl: 2rem;
+  --font-size-xxxl: 3rem;
+
+  --line-height-50: 1.8;
+
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Spacing */
+  --spacing-base: 4px;
+
+  --spacing-1: calc(1 * var(--spacing-base));
+  --spacing-2: calc(2 * var(--spacing-base));
+  --spacing-3: calc(3 * var(--spacing-base));
+  --spacing-4: calc(4 * var(--spacing-base));
+  --spacing-6: calc(6 * var(--spacing-base));
+  --spacing-8: calc(8 * var(--spacing-base));
+  --spacing-10: calc(10 * var(--spacing-base));
+  --spacing-12: calc(12 * var(--spacing-base));
+  --spacing-16: calc(16 * var(--spacing-base));
+}

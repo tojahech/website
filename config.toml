@@ -1,9 +1,10 @@
-baseURL = 'http://tojahech.com/'
-languageCode = 'en-us'
-title = 'tojahech'
+base_url = "https://tojahech.com"
+title = "tojahech"
+compile_sass = false
+build_search_index = false
+minify_html = false
 
-[markup]
-  [markup.goldmark]
-    [markup.goldmark.renderer]
-      unsafe = true
-
+[markdown]
+highlight_code = true
+highlight_theme = "base16-ocean-dark"
+render_emoji = true
