@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 
 <html lang="en">
-  <title>Site - Page</title>
+  <title>{% block title %} {% endblock %}</title>
 
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
@@ -12,18 +12,18 @@
 
   <body class="layout-base">
       <div class="sidebar-wrapper">
-        <div class="sidebar">
-          <ul>
-            <li>Thing 1</li>
-            <li>Thing 2</li>
-            <li>Thing 3</li>
-            <li>Thing 4</li>
-        </div>
+        <aside class="sidebar">
+          <menu>
+            <li><a href="/">tojahech</a></li>
+            <li><a href="/">stuff</a></li>
+            <li><a href="/contact">contact</a></li>
+          </menu>
+        </aside>
       </div>
       <div class="content-wrapper">
-        <div class="content">
+        <main class="content">
           {% block content %} {% endblock %}
-        </div>
+        </main>
       </div>
   </body>
 </html>
