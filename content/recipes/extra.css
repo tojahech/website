@@ -1,0 +1,10 @@
+p, ul {
+  border-left: solid 5px #649861;
+  border-left: solid 5px #e4494b;
+  padding-left: 10px;
+  margin-left: 10px;
+}
+
+li {
+  margin-left: 20px;
+}
