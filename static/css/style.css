@@ -1,6 +1,6 @@
 @charset "UTF-8";
 
-@layer reset, tokens, layout;
+@layer reset, tokens, layout, base, design;
 
 @import "/css/reset.css" layer(reset);
 @import "/css/tokens.css" layer(tokens);
@@ -9,9 +9,7 @@
   .layout-base {
     display: grid;
     grid-template-columns: 1fr;
-    background-color: red;
     width: 100%;
-    column-gap: 4px;
   }
 
   @media screen and (min-width: 800px) {
@@ -22,20 +20,13 @@
   }
 
   .layout-base .sidebar-wrapper {
-    background-color: blue;
-    border-right: 4px solid #333;
     min-height: 200px;
     display: flex;
     align-items: center;
     justify-content: right;
   }
 
-  .sidebar {
-    background: white;
-  }
-
   .layout-base .content-wrapper {
-    background-color: green;
     padding: 48px;
     overflow-y: scroll;
     display: flex;
@@ -43,8 +34,96 @@
   }
 
   .content {
-    background: white;
     max-width: 600px;
     height: fit-content;
+  }
+}
+
+@layer base {
+  :root {
+    --base-foreground: var(--shadow-20);
+    --base-background: var(--canopy-60);
+  }
+
+  html {
+    font-size: var(--font-size-base);
+    font-family: var(--font-stack-sans);
+    line-height: var(--line-height-text);
+    background-color: var(--base-background);
+  }
+
+  p,
+  a:link,
+  a:visited,
+  a:hover {
+    color: var(--base-foreground);
+    font-size: var(--font-size-m);
+  }
+
+  .title,
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-stack-serif);
+    font-variant: small-caps;
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-heading);
+    margin-top: var(--spacing-4);
+    margin-bottom: var(--spacing-3);
+  }
+
+  .title {
+    font-size: var(--font-size-xxxl);
+  }
+
+  h1 {
+    font-size: var(--font-size-xxl);
+  }
+
+  h2 {
+    font-size: var(--font-size-xl);
+  }
+
+  h3 {
+    font-size: var(--font-size-l);
+  }
+
+  p {
+    margin-bottom: var(--spacing-2);
+  }
+
+  ul,
+  ol {
+    list-style-type: square;
+  }
+
+  strong {
+    font-weight: var(--font-weight-semibold);
+  }
+}
+
+@layer design {
+  .sidebar-wrapper {
+    border-right: 4px solid var(--shadow-40);
+    background: var(--shadow-20);
+    color: var(--canopy-40);
+
+    text-align: right;
+
+    menu {
+      list-style-type: none;
+    }
+
+    a:link,
+    a:visited,
+    a:hover {
+      color: var(--canopy-40);
+      text-decoration: none;
+    }
+  }
+
+  .content-wrapper {
+    background: var(--canopy-60);
+    color: var(--shadow-20);
   }
 }
