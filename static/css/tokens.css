@@ -1,50 +1,50 @@
 :root {
   /* Colours */
-  --canopy_20: #5d6f44;
-  --canopy_40: #839b5f;
-  --canopy_60: #b2c29b;
-  --canopy_80: #c6d1b5;
+  --canopy-20: #5d6f44;
+  --canopy-40: #839b5f;
+  --canopy-60: #b2c29b;
+  --canopy-80: #c6d1b5;
 
-  --shadow_10: #1e1c1b;
-  --shadow_20: #211e1d;
-  --shadow_30: #2e2b29;
-  --shadow_40: #3f3734;
+  --shadow-10: #1e1c1b;
+  --shadow-20: #211e1d;
+  --shadow-30: #2e2b29;
+  --shadow-40: #3f3734;
 
-  --foilage_30: #456d2d;
-  --foilage_50: #6aa744;
-  --foilage_70: #82bd5e;
+  --foilage-30: #456d2d;
+  --foilage-50: #6aa744;
+  --foilage-70: #82bd5e;
 
-  --soil_10: #211a10;
-  --soil_30: #463724;
-  --soil_50: #725a3b;
-  --soil_70: #a07f53;
-  --soil_90: #c0a886;
+  --soil-10: #211a10;
+  --soil-30: #463724;
+  --soil-50: #725a3b;
+  --soil-70: #a07f53;
+  --soil-90: #c0a886;
 
-  --waterfalls_40: #5e8990;
-  --waterfalls_60: #83a6b9;
-  --waterfalls_70: #b9cad6;
-  --waterfalls_90: #dae4ed;
+  --waterfalls-40: #5e8990;
+  --waterfalls-60: #83a6b9;
+  --waterfalls-70: #b9cad6;
+  --waterfalls-90: #dae4ed;
 
-  --sunray_60: #ddc669;
-  --sunray_80: #e9ddaf;
+  --sunray-60: #ddc669;
+  --sunray-80: #e9ddaf;
 
-  --lorikeet_g_50: #45af38;
-  --lorikeet_g_70: #6bcc5f;
-  --lorikeet_b_50: #3c31e1;
-  --lorikeet_b_70: #695fff;
-  --lorikeet_r_50: #e42823;
-  --lorikeet_r_70: #f35c58;
-  --lorikeet_o_50: #f6c43f;
-  --lorikeet_o_70: #f7cc58;
-  --lorikeet_y_50: #fef435;
-  --lorikeet_y_70: #fef769;
+  --lorikeet-g-50: #45af38;
+  --lorikeet-g-70: #6bcc5f;
+  --lorikeet-b-50: #3c31e1;
+  --lorikeet-b-70: #695fff;
+  --lorikeet-r-50: #e42823;
+  --lorikeet-r-70: #f35c58;
+  --lorikeet-o-50: #f6c43f;
+  --lorikeet-o-70: #f7cc58;
+  --lorikeet-y-50: #fef435;
+  --lorikeet-y-70: #fef769;
 
   /* Typography */
 
   --font-stack-serif: "Lora", sans-serif;
   --font-stack-sans: "Montserrat", sans-serif;
 
-  --font-size-base: 16px;
+  --font-size-base: 14px;
 
   --font-size-xxs: 0.625rem;
   --font-size-xs: 0.75rem;
@@ -55,7 +55,8 @@
   --font-size-xxl: 2rem;
   --font-size-xxxl: 3rem;
 
-  --line-height-50: 1.8;
+  --line-height-heading: 1.1;
+  --line-height-text: 1.5;
 
   --font-weight-light: 300;
   --font-weight-regular: 400;
@@ -68,11 +69,8 @@
 
   --spacing-1: calc(1 * var(--spacing-base));
   --spacing-2: calc(2 * var(--spacing-base));
-  --spacing-3: calc(3 * var(--spacing-base));
-  --spacing-4: calc(4 * var(--spacing-base));
-  --spacing-6: calc(6 * var(--spacing-base));
-  --spacing-8: calc(8 * var(--spacing-base));
-  --spacing-10: calc(10 * var(--spacing-base));
-  --spacing-12: calc(12 * var(--spacing-base));
-  --spacing-16: calc(16 * var(--spacing-base));
+  --spacing-3: calc(4 * var(--spacing-base));
+  --spacing-4: calc(8 * var(--spacing-base));
+  --spacing-5: calc(16 * var(--spacing-base));
+  --spacing-6: calc(32 * var(--spacing-base));
 }
