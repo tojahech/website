@@ -6,27 +6,27 @@
 @import "/css/tokens.css" layer(tokens);
 
 @layer layout {
-  .layout-base {
+  .layout-split {
     display: grid;
     grid-template-columns: 1fr;
     width: 100%;
   }
 
   @media screen and (min-width: 800px) {
-    .layout-base {
+    .layout-split {
       height: 100vh;
       grid-template-columns: 1fr 2fr;
     }
   }
 
-  .layout-base .sidebar-wrapper {
+  .layout-split .sidebar-wrapper {
     min-height: 200px;
     display: flex;
     align-items: center;
     justify-content: right;
   }
 
-  .layout-base .content-wrapper {
+  .layout-split .content-wrapper {
     padding: 48px;
     overflow-y: scroll;
     display: flex;
