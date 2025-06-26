@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block layout %}
+  <body class="layout-split">
+      <div class="sidebar-wrapper">
+        <aside class="sidebar">
+          <menu>
+            <li><a href="/">tojahech</a></li>
+            <li><a href="/">stuff</a></li>
+            <li><a href="/contact">contact</a></li>
+          </menu>
+        </aside>
+      </div>
+      <div class="content-wrapper">
+        <main class="content">
+          {% block content %} {% endblock %}
+        </main>
+      </div>
+  </body>
+{% endblock layout %}
