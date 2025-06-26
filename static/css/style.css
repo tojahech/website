@@ -37,6 +37,23 @@
     max-width: 600px;
     height: fit-content;
   }
+
+  .layout-centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: var(--spacing-5);
+  }
+
+  .layout-centered .content {
+    max-width: 600px;
+    padding: var(--spacing-5);
+    background-color: var(--canopy-60);
+    color: var(--shadow-20);
+    border-radius: var(--radius-m);
+    box-shadow: 10px 20px 20px var(--shadow-40);
+  }
 }
 
 @layer base {
@@ -73,6 +90,7 @@
   }
 
   .title {
+    margin-top: 0;
     font-size: var(--font-size-xxxl);
   }
 
@@ -124,6 +142,15 @@
 
   .content-wrapper {
     background: var(--canopy-60);
+    color: var(--shadow-20);
+  }
+
+  .layout-centered {
+    background-color: var(--shadow-20);
+  }
+
+  .layout-centered .content {
+    background-color: var(--canopy-60);
     color: var(--shadow-20);
   }
 }

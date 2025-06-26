@@ -73,4 +73,8 @@
   --spacing-4: calc(8 * var(--spacing-base));
   --spacing-5: calc(16 * var(--spacing-base));
   --spacing-6: calc(32 * var(--spacing-base));
+
+  /* Radii */
+
+  --radius-m: 16px;
 }
