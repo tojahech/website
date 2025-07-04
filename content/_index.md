@@ -66,4 +66,3 @@ Both projects were engrossing and I was lucky enough to discover some minor resu
 
 - [Riddles and Logic Puzzles](/riddles/)
 - [Recipes](/recipes/)
-- [Sweet Recipes](/sweets/)
