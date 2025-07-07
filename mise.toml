@@ -1,0 +1,5 @@
+[tools]
+typos = "latest"
+
+[tasks.spellcheck]
+run = "typos"
