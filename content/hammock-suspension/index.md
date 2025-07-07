@@ -24,7 +24,7 @@ The diagram below demonstrates how to tie a slipped sheet bend.
 
 Using the sheet bend we can easily suspend a hammock.
 There are essentially two choices of how to do this, either we make the knot at the tree or at the hammock.
-Both options are perfectly servicable.
+Both options are perfectly serviceable.
 
 ## Knot at the Hammock
 
@@ -46,7 +46,7 @@ I suggest several options for the long straps.
 ## Knot at the Tree
 
 Alternatively you can tie the knot at the tree.
-This option is more compatable with standard tree straps and avoids using an extra piece of rope to gather the hammock.
+This option is more compatible with standard tree straps and avoids using an extra piece of rope to gather the hammock.
 
 Use two large lengths of cord, with eyes spiced or sewn in one end, to gather your hammock.
 Place the tree strap as normal and attach the hammock with a sheet bend.

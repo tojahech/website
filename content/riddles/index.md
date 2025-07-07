@@ -280,7 +280,7 @@ If you manage to figure out a true solution, please let me know.
 **Existence**
 
 First off, let's look at one option for what the numbers could be.
-If Bob's nuber is 10 and Carrol's number is 15 then the conversation makes sense.
+If Bob's number is 10 and Carrol's number is 15 then the conversation makes sense.
 You can find these numbers either by guessing or with some algebra but for now we'll just verify that they work.
 Let's start by looking at what the three people determine about their numbers at each stage of the conversation.
 Write A, B and C for the numbers of Alice, Bob and Carrol.

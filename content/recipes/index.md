@@ -70,7 +70,7 @@ Flip the chicken after the bottom has browned.
 Add a **diced large onion**, **2 cloves diced garlic** and a similar amount of **diced ginger**.
 Season with **salt**, **pepper**, **ground caramom** and **basil**.
 
-Once the onions have cooked, add in a **coarsely sliced leek**, **2 large diced tomatos** and a **diced zucchini**.
+Once the onions have cooked, add in a **coarsely sliced leek**, **2 large diced tomatoes** and a **diced zucchini**.
 Continue cooking until the veges are tender, adding water if the meal dries out too much.
 
 ## Braised Sichaun Eggplant
@@ -96,7 +96,7 @@ Sear the chicken with **olive oil** in a large pan and then set it aside.
 Saute **1 diced onion**, **6 cloves crushed garlic**, **100g chopped fresh ginger** and **2 diced green chillies** in the oil remaining from the chicken.
 Stir in **3 tbsp tomato paste**, a **pinch of saffron threads** and **5 sprigs of thyme**.
 
-Add **200ml white wine**, **200g dried apricots**, **zest and juice of 1 lemon**, **2 tbsp honey**, **2 tbsp vegetable stock powder** and a **handfull of pistacios**.
+Add **200ml white wine**, **200g dried apricots**, **zest and juice of 1 lemon**, **2 tbsp honey**, **2 tbsp vegetable stock powder** and a **handful of pistacios**.
 Bring the liquid to a simmer and return the chicken pieces to the pan.
 
 Add water until the chicken is just covered.
@@ -121,9 +121,9 @@ Throw in **2 diced onions** and some **salt**.
 Once the onions have begun to brown, put **500g pork or beef mince** in the wok.
 As it cooks, season with **salt**, **pepper** and your choice of spices.
 I like to use an exotic **chilli blend**.
-Add **soy sauce** to the mince one tablespooon at a time until the meat is covered.
+Add **soy sauce** to the mince one tablespoon at a time until the meat is covered.
 Throw in **diced celery, capsicum and leek**.
-Once the veges are done stir the the rice and remove from the heat.
+Once the veges are done stir the rice and remove from the heat.
 
 ## Pad Thai
 
@@ -304,7 +304,7 @@ Beat the eggs until they form stiff peaks.
 Gradually add **3/4 cup caster sugar** as you continue beating.
 Mix in **1/2 tsp vanilla extract**.
 
-In a separate bowl mix **1 cup dessicated coconut**, **1/4 cup cocoa powder**, **1.2 cup chopped macadamia nuts** and **1 tsp salt**.
+In a separate bowl mix **1 cup desiccated coconut**, **1/4 cup cocoa powder**, **1.2 cup chopped macadamia nuts** and **1 tsp salt**.
 
 Fold the egg mixture through the dry ingredients.
 Pipe the mixture onto a baking tray (with baking paper).
@@ -387,7 +387,7 @@ Press into a tray and refrigerate.
 
 (Feel free to substitute apples for any other fruit.)
 
-To make the topping mix **1 cup sugar**, **1 cup plain flour** and **1 cup dessicated coconut**.
+To make the topping mix **1 cup sugar**, **1 cup plain flour** and **1 cup desiccated coconut**.
 Add **200g melted butter** and stir thoroughly.
 
 Put **2 cans of tinned apples** in a baking dish and cover with the topping.

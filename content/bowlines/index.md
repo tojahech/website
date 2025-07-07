@@ -186,7 +186,7 @@ I'll briefly outline the arguments against the bowline.
 
 - The figure eight is ubiquitous, every climber knows it.
   The bowline and its variants are more esoteric and it's not guaranteed that your partner will know the knot you're using.
-  If they can't double check your knot you've lost an important bit of redundency.
+  If they can't double check your knot you've lost an important bit of redundancy.
 
 These are all valid concerns and you'll have to decide what's right for yourself.
 Personally I take a fairly conservative approach.
