@@ -1,5 +1,6 @@
 ---
-title: "Build Your Own Covid-19 Hangboard"
+title: "Simple DIY Hangboard"
+description: "Set of instructions for building a simple DIY hangboard"
 ---
 
 With climbing gyms closing and a pandemic raging, a few friends asked me to build them portable hangboards to get strong while stuck at home.

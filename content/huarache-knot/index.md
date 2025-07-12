@@ -1,5 +1,6 @@
 ---
 title: "Hidden Knot Huaraches"
+description: 'Subtle "end-less" knot for tying Huaraches'
 ---
 
 ![](diagram-overview.png)

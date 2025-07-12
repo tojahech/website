@@ -1,5 +1,6 @@
 ---
 title: "Pillowcase Stuff-sack"
+description: "Ultralight alternative to a compression sack"
 ---
 
 This isn't really a novel design I'm sharing here, it's a bloody pillow case.

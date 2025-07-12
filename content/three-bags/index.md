@@ -1,5 +1,6 @@
 ---
 title: "Three-Bag Packing System"
+description: "Handy technique for organising gear when through hiking"
 ---
 
 Ultralight hiking packs have an tendency to morph into uncomfortable bulging blobs when they're not packed well.

@@ -1,5 +1,6 @@
 ---
 title: "Recipes"
+description: "Notes on my favourite recipes"
 ---
 
 # Meals

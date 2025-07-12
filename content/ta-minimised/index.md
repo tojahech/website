@@ -1,5 +1,6 @@
 ---
 title: "Minimised Te Araroa GPS Files"
+description: "GPX file with all the extra cruft removed so it would work on an ancient phone"
 ---
 
 Te Araroa is a long hiking trail in New Zealand that spans the entire country.

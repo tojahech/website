@@ -1,5 +1,6 @@
 ---
 title: "Mt Beerwah East Face"
+description: "Map and trail notes for a lesser-known route up Mt Beerwah"
 ---
 
 Mount Beerwah is the best hike near Brisbane.

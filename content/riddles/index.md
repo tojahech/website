@@ -1,5 +1,6 @@
 ---
 title: "Riddles and Logic Puzzles"
+description: "A few of my favourite brain teasers"
 ---
 
 A collection of my favourite logic puzzles.

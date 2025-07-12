@@ -1,5 +1,6 @@
 ---
-title: "The Seductive Bowline"
+title: "Bowline variants"
+description: "Several different forms of the bowline used as a climbing tie-in"
 ---
 
 The figure of eight is the perfect knot to attach a climbing rope to a harness.

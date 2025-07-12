@@ -1,5 +1,6 @@
 ---
 title: "Climbing Phone Pouches"
+description: "Silly idea to carry a phone when cilmbing -- just use a pocket"
 ---
 
 Where do you put your phone if you want to take photos from the top of a climb?

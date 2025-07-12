@@ -1,5 +1,6 @@
 ---
 title: "Teaching Someone to Lead Climb"
+description: "Tips I used back when I frequently taught people to lead"
 ---
 
 Climb outdoors enough and eventually someone's going to ask you to teach them to lead.

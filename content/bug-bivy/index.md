@@ -1,5 +1,6 @@
 ---
 title: "Bug Bivy"
+description: "Design for a bug-bivy"
 ---
 
 For a hiking shelter with the perfect balance between versatility and light weight it's almost impossible to beat the tarp and bivy combination.

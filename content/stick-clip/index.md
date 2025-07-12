@@ -1,5 +1,6 @@
 ---
 title: "The Infinity Clip"
+description: "Tiny bit of tat to leave in the bottom of your bag that makes stick-clipping a breeze"
 ---
 
 The infinity clip is the best thing since sliced bread.

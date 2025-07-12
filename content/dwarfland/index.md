@@ -1,5 +1,6 @@
 ---
-title: "Dwarfland Topo"
+title: "Dwarfland"
+description: "Topo and ticklist for Dwarfland at Mt Tibrogagan"
 ---
 
 Dwarfland is a small crag just near Mt Tibrogagan in Queensland (Australia).

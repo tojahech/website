@@ -1,5 +1,6 @@
 ---
 title: "Kangaroo Point Cliffs Topo"
+description: "A simple one-page map of the climbing routes at Kangaroo Point"
 ---
 
 ![](map_snippet2.png)

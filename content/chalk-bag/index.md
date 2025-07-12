@@ -1,5 +1,6 @@
 ---
 title: "Chalk Bags"
+description: "Plans for a chalk bag I used to make"
 ---
 
 There are tons of different chalk bags out there, from high-tech twist lock bags to repurposed stuffed animals.

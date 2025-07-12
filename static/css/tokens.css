@@ -39,6 +39,9 @@
   --lorikeet-y-50: #fef435;
   --lorikeet-y-70: #fef769;
 
+  --base-foreground: var(--shadow-20);
+  --base-background: var(--canopy-60);
+
   /* Typography */
 
   --font-stack-serif: "Lora", sans-serif;

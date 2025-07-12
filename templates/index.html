@@ -8,6 +8,13 @@
 
 <h1 class="title">tojahech</h1>
 
+{% for post in section.pages %}
+  <div class="menu-item">
+    <a href="{{ post.permalink }}">{{ post.title }}</a>
+    {{ post.description }}
+  </div> 
+{% endfor %}
+
 {{ section.content | safe }}
 
 {% endblock content %}

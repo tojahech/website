@@ -1,5 +1,6 @@
 ---
 title: "Hammock Suspension"
+description: "Simple and lightweight set of knots for hanging a hammock"
 ---
 
 Hammocks themselves are simple, just a rectangle of fabric, but the systems people use to set them up can be anything but.

@@ -1,5 +1,6 @@
 ---
 title: "Hammock Bag"
+description: "Design for a nifty little bag for hiking hammocks"
 ---
 
 This simple bag is the perfect stuff-sack for hammocks.

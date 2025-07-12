@@ -1,5 +1,6 @@
 ---
 title: "Tibrogagan Sport Climbing Localities Map"
+description: "Simple map showing the different crags at Mt Tibrogagan"
 ---
 
 My Tibrogagan has plenty of wonderful sport climbing.

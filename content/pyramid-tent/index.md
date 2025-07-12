@@ -1,5 +1,6 @@
 ---
 title: "MYOG Pyramid Tent"
+description: "Plans for an ultralight single-pole pyramid tent"
 ---
 
 Pyramid tents are popular amongst ultralight hikers, but almost completely unknown outside of that community.
@@ -128,7 +129,6 @@ I don't claim to be a wiz with a sewing machine, but here are a few tips to help
   If you measure each panel individually, a millimeter of slip here and there might add up to a rather wonky last panel!
 
 - Join the panels together with a single straight stitch, then erect the tent to determine the rest of the details experimentally.
-
   - Work out where to join the awning pieces by eye.
     You could calculate this, but it's much easier to just test it and you'll also avoid getting caught out by stretchy fabric.
 
