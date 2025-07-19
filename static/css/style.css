@@ -175,4 +175,26 @@
       font-weight: var(--font-weight-semibold);
     }
   }
+
+  .accordion {
+    summary {
+      font-weight: var(--font-weight-bold);
+      background-color: var(--green-80);
+      border-radius: var(--radius-s);
+      padding: var(--spacing-2);
+      /* list-style: none; */
+    }
+
+    div {
+      padding: var(--spacing-3);
+    }
+  }
+
+  .accordion + .accordion {
+    margin-top: var(--spacing-3);
+  }
+
+  .accordion:open + .accordion {
+    margin-top: 0;
+  }
 }

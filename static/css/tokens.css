@@ -67,6 +67,7 @@
 
   /* Radii */
 
+  --radius-s: 8px;
   --radius-m: 16px;
   --radius-l: 24px;
 }
