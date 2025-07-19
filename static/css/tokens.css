@@ -1,46 +1,31 @@
 :root {
   /* Colours */
-  --canopy-20: #5d6f44;
-  --canopy-40: #839b5f;
-  --canopy-60: #b2c29b;
-  --canopy-80: #c6d1b5;
+  --green-40: #71845e;
+  --green-60: #90a073;
+  --green-80: #c6d1b5;
 
-  --shadow-10: #1e1c1b;
-  --shadow-20: #211e1d;
-  --shadow-30: #2e2b29;
-  --shadow-40: #3f3734;
+  --white: #fff;
 
-  --foilage-30: #456d2d;
-  --foilage-50: #6aa744;
-  --foilage-70: #82bd5e;
+  --grey-10: #1e1c1b;
+  --grey-20: #333;
 
-  --soil-10: #211a10;
-  --soil-30: #463724;
-  --soil-50: #725a3b;
-  --soil-70: #a07f53;
-  --soil-90: #c0a886;
+  --brown-60: #a07f53;
+  --brown-80: #c0a886;
 
-  --waterfalls-40: #5e8990;
-  --waterfalls-60: #83a6b9;
-  --waterfalls-70: #b9cad6;
-  --waterfalls-90: #dae4ed;
+  --blue-60: #83a6b9;
+  --blue-70: #b9cad6;
+  --blue-90: #dae4ed;
 
-  --sunray-60: #ddc669;
-  --sunray-80: #e9ddaf;
+  --yellow-60: #ddc669;
+  --yellow-80: #e9ddaf;
 
-  --lorikeet-g-50: #45af38;
-  --lorikeet-g-70: #6bcc5f;
-  --lorikeet-b-50: #3c31e1;
-  --lorikeet-b-70: #695fff;
-  --lorikeet-r-50: #e42823;
-  --lorikeet-r-70: #f35c58;
-  --lorikeet-o-50: #f6c43f;
-  --lorikeet-o-70: #f7cc58;
-  --lorikeet-y-50: #fef435;
-  --lorikeet-y-70: #fef769;
+  --base-foreground: var(--grey-20);
+  --base-background: var(--white);
 
-  --base-foreground: var(--shadow-20);
-  --base-background: var(--canopy-60);
+  --highlight: var(--green-40);
+
+  --alt-foreground: var(--grey-10);
+  --alt-background: var(--green-60);
 
   /* Typography */
 
@@ -65,7 +50,7 @@
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
-  --font-weight-bold: 700;
+  --font-weight-bold: 900;
 
   /* Spacing */
   --spacing-base: 4px;
