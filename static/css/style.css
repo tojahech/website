@@ -106,7 +106,7 @@
   }
 
   .layout-split .content {
-    max-width: 600px;
+    width: min(100%, var(--max-content-width));
     height: fit-content;
   }
 
@@ -122,7 +122,7 @@
   .layout-centered .content {
     background-color: var(--alt-background);
     color: var(--alt-foreground);
-    max-width: 600px;
+    width: min(100%, var(--max-content-width));
     padding: var(--spacing-5);
     border-radius: var(--radius-m);
     box-shadow:
