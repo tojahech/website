@@ -5,7 +5,7 @@ description: "Notes on my favourite recipes"
 
 # Meals
 
-## Paprika Nudeln
+{% accordion(title="Paprika Nudeln") %}
 
 Slice **ten capsicum**, **three onions** and **three tomatoes** into long thin strips.
 Skin and slice some large pieces of **ginger**.
@@ -19,7 +19,9 @@ Once the mountain of capsicum starts to reduce in volume, add the dates and seas
 
 When the capsicum is soft with a noodle-like texture the meal is done.
 
-## Moroccan Lamb Casserole
+{% end %}
+
+{% accordion(title="Moroccan Lamb Casserole") %}
 
 Heat **2 tablespoons olive oil** in a large pan or pot then brown **1kg lamb** which has been chopped into large pieces.
 Sauté **2 diced onions** and **2 cloves crushed garlic** with the lamb after the outsides are seared.
@@ -31,7 +33,9 @@ Throw in a **cup of walnuts** and one fruit worth of **orange zest**.
 Transfer the meal into a large casserole dish, squeeze in the juice from the **orange** and pour in a little water.
 Cook in an oven at 180°C for an hour or so.
 
-## Isha and Kathryn's Vege Burger
+{% end %}
+
+{% accordion(title="Isha and Kathryn's Vege Burger") %}
 
 Make the five components of this recipe separately.
 You can overlap their preparation somewhat.
@@ -49,7 +53,9 @@ Let the mixture stand for a while then roll into balls.
 Cook in a pan with **olive oil**.
 I'm often too impatient to make patties and prefer to just cook it as a 'tasty mush'.
 
-## Sweet Turkish Lamb
+{% end %}
+
+{% accordion(title="Sweet Turkish Lamb") %}
 
 Dice **2kg lamb** into fist sized pieces.
 Heat **2tbsp olive oil** in a large pan and sear the lamb.
@@ -61,7 +67,9 @@ Add **250g raisins**, **1tbsp ground cinnamon** and **2tbsp honey** and cook a l
 
 Transfer the meal to a casserole dish, add water to a depth of about 2cm and bake at 180°C for two hours.
 
-## Aromatic Chicken with Leeks
+{% end %}
+
+{% accordion(title="Aromatic Chicken with Leeks") %}
 
 Salt **500g chicken thighs** around half an hour before you begin cooking.
 
@@ -74,7 +82,9 @@ Season with **salt**, **pepper**, **ground caramom** and **basil**.
 Once the onions have cooked, add in a **coarsely sliced leek**, **2 large diced tomatoes** and a **diced zucchini**.
 Continue cooking until the veges are tender, adding water if the meal dries out too much.
 
-## Braised Sichaun Eggplant
+{% end %}
+
+{% accordion(title="Braised Sichaun Eggplant") %}
 
 Cut **one eggplant** into small pieces and submerge in salt water for 15 to 20 minutes.
 
@@ -89,7 +99,9 @@ Cook until the onions just start to soften.
 Mix in **2 tbsp hoisin sauce**.
 Add the chilli sauce and cook about three minutes until done.
 
-## Better Apricot Chicken
+{% end %}
+
+{% accordion(title="Better Apricot Chicken") %}
 
 Cut **1.5kg chicken breast** into large pieces and rub in a mixture of **2 tsp salt**, **2 tsp ground cumin**, **2 tsp ground coriander**, **2 tsp ground cinnamon**, **2 tsp ground turmeric**, **2 tsp chilli flakes** and **1 tsp black pepper**.
 Sear the chicken with **olive oil** in a large pan and then set it aside.
@@ -103,7 +115,9 @@ Bring the liquid to a simmer and return the chicken pieces to the pan.
 Add water until the chicken is just covered.
 Simmer with the lid on for 10 minutes and then for a further 15 minutes without the lid.
 
-## Beetroot Curry
+{% end %}
+
+{% accordion(title="Beetroot Curry") %}
 
 Coarsely dice **one onion**, a medium sized chunk of **ginger** and **two cloves of garlic**.
 Heat some **olive oil** in a pot then sauté the onion, ginger and garlic.
@@ -114,7 +128,9 @@ Stir the spices through the onion and toast for a little bit.
 Add a can of **baby beetroot** and a diced **sweet potato**.
 Pour in a cup of **coconut milk** and allow to simmer until the potato is soft.
 
-## Rice Lunch
+{% end %}
+
+{% accordion(title="Rice Lunch") %}
 
 Prepare **2 cups brown rice** on the side.
 Add **1 tbsp coconut oil** to a wok and heat.
@@ -126,7 +142,9 @@ Add **soy sauce** to the mince one tablespoon at a time until the meat is covere
 Throw in **diced celery, capsicum and leek**.
 Once the veges are done stir the rice and remove from the heat.
 
-## Pad Thai
+{% end %}
+
+{% accordion(title="Pad Thai") %}
 
 Prepare all the components of the meal beforehand and cook in batches to avoid overloading your wok.
 
@@ -137,9 +155,11 @@ Beat an **egg** in a bowl and scramble in the wok.
 Add some of the sauce along with a handful of **bean sprouts** and **rice noodles**, and a sprinkle of **crushed peanuts**.
 Top the dish with some more crushed peanuts, the green parts of the spring onions and a few wedges of **lime**.
 
+{% end %}
+
 # Soups
 
-## Creamy Pumpkin Soup
+{% accordion(title="Creamy Pumpkin Soup") %}
 
 Coarsely dice **half a pumpkin** and **one large sweet potato**.
 
@@ -152,7 +172,9 @@ Bring the soup to the boil and allow to gently cook until the vegetables are sof
 Mash the pumpkin and sweet potato and continue cooking until the mixture has reduced in volume to the desired thickness.
 Stir in **one cup coconut milk**.
 
-## Chicken Noodle Soup
+{% end %}
+
+{% accordion(title="Chicken Noodle Soup") %}
 
 Dice **one large onion** and similar amounts of **carrot** and **celery**.
 Saute the vegetables with **olive oil** in a large pot.
@@ -165,7 +187,9 @@ Remove the chicken and slice / tear into small pieces.
 Add **200g rice noodles** and cook for a further 5 minutes.
 Put the chicken back in and add **salt** and **pepper** to taste.
 
-## Tomato Soup
+{% end %}
+
+{% accordion(title="Tomato Soup") %}
 
 Finely dice some **garlic** and saute with **olive oil** in a large pot.
 Add **salt**, **pepper**, **oregano** and **thyme**.
@@ -174,7 +198,9 @@ Pour in a large can of **tinned tomatoes** and cook the liquid down.
 Transfer the tomato mixture to a food processor and add some torn up chunks of **bread**.
 Return it to the pot and cook until it reaches your desired consistency.
 
-## Leek and Potato Soup
+{% end %}
+
+{% accordion(title="Leek and Potato Soup") %}
 
 Saute **1 diced leek** in **25g butter** and a similar amount of **peanut oil**.
 Peel and wash **500g** potatoes.
@@ -183,27 +209,35 @@ Don't wash the potatoes again as the starch helps thicken the soup.
 Add the potatoes along with some **salt** and **pepper** to the leaks then pour in **1L chicken stock**.
 Bring to the boil and then boil gently for around 15 minutes.
 
+{% end %}
+
 # Fundamentals
 
-## Annie's Chicken Marinade
+{% accordion(title="Annie's Chicken Marinade") %}
 
 Mix equal parts of **olive oil**, **soy sauce** and **lemon juice** in a bowl.
 Add some fresh grated **ginger**.
 Place the pieces of chicken in the marinade and allow to sit overnight, absorbing the flavour.
 
-## Annie's Steak Marinade
+{% end %}
+
+{% accordion(title="Annie's Steak Marinade") %}
 
 Mix **two tablespoons olive oil**, **one tablespoon soy sauce**, **one tablespoon vinegar** and **one desert spoon honey**.
 Add **one crushed clove garlic**, **diced ginger** and two sliced **shallots**.
 After stirring the marinade well, mix the beef in the marinade and let it sit overnight.
 
-## Actually Tasty Couscous
+{% end %}
+
+{% accordion(title="Actually Tasty Couscous") %}
 
 Bring 1 3/4 cups water (or stock), 1 tbsp butter, 1 tbsp olive oil and 1/2 tsp salt to the boil.
 Add 1 1/2 cups couscous and return to the boil.
 Remove the pot from the heat, seal the lid tightly and let sit for 5-10 minutes.
 
-## Jasmine's Rice
+{% end %}
+
+{% accordion(title="Jasmine's Rice") %}
 
 Sauté **one diced onion** and **two cloves crushed garlic** with **olive oil** in a pot.
 Once the onions begin to caramelise, add **salt**, **pepper**, **turmeric**, **ground clove** and **cardamon**.
@@ -215,15 +249,19 @@ Add **1 1/2 cups of water** and bring to the boil.
 Put a tight fitting lid on the pot and reduce the heat.
 Let the rice simmer for around 20 minutes or until it's done.
 
-## Popcorn
+{% end %}
+
+{% accordion(title="Popcorn") %}
 
 1/2 cup popcorn, 2 tbsp olive oil.
 In wok with lid / aluminium foil with holes poked.
 Constantly shake
 
+{% end %}
+
 # Breads
 
-## Focaccia
+{% accordion(title="Focaccia") %}
 
 Combine the **500g white flour**, **25g yeast**, **1 tablespoon of sugar**, **1/2 cup olive oil** with 350ml of warm water.
 Mix into a dough and turn onto a floured surface.
@@ -237,7 +275,9 @@ Cover in **salt**, **rosemary** and **olives**.
 Cook at 220C for about 15 minutes.
 You will know when it is done because the bread sounds hollow when you tap it.
 
-## Hot Cross Buns (Sans Cross)
+{% end %}
+
+{% accordion(title="Hot Cross Buns (Sans Cross)") %}
 
 Combine **14g dry yeast** with **1/4 cup of caster sugar** and **1 1/2 cups warm milk** in a bowl.
 Allow it to stand until the mixture is frothy.
@@ -256,9 +296,11 @@ Bake in a 220C oven for 20 minutes or until brown.
 
 (The cross is tasteless and pointless, but if you insist, just mix some flour and water into a paste then shape the cross.)
 
+{% end %}
+
 # Biscuits
 
-## Chocolate Peanut Biscuits
+{% accordion(title="Chocolate Peanut Biscuits") %}
 
 Cream **125g butter** with **125g sugar**.
 Add **1 egg** and beat well.
@@ -269,7 +311,9 @@ Mix the dry and wet ingredients then stir in **1 cup raw shelled peanuts**.
 Roll into balls and press onto a greased tray.
 Bake for 20 minutes at 180C.
 
-## Anzac Biscuits
+{% end %}
+
+{% accordion(title="Anzac Biscuits") %}
 
 Combine **1 cup rolled oats**, **1 cup flour** and **1 cup brown sugar**.
 Heat **2 tbsp golden syryp**, **125g butter** and **2 tbsp water** until the butter has melted.
@@ -279,7 +323,9 @@ Mix the warm ingredients into the dry ingredients and stir thoroughly.
 Press golf ball sized biscuits onto a baking tray and cook at 160C for 15 minutes.
 Allow to cool on the tray so that they harder properly.
 
-## Gingernuts
+{% end %}
+
+{% accordion(title="Gingernuts") %}
 
 Cream **200g butter** with **1 cup sugar** then mix in **1 cup golden syrup**.
 Sift together **3 cups flour**, **1 heaped tablespoon ginger** and **1 teaspoon bi-carb soda**.
@@ -289,7 +335,9 @@ Roll the mixture into golf-ball sized biscuits and place on a baking paper cover
 Leave plenty of room for them to grow.
 Bake at 180C for 15 minutes.
 
-## Elsie Fingers
+{% end %}
+
+{% accordion(title="Elsie Fingers") %}
 
 Cream **125g butter** with **90g caster sugar**.
 Beat in **1 egg**.
@@ -298,7 +346,9 @@ You might need to add some more to get a good consistency.
 Roll the dough into balls (or short 'fingers') and roll in sugar.
 Bake at 180C for 15 minutes.
 
-## Lydia Cookies
+{% end %}
+
+{% accordion(title="Lydia Cookies") %}
 
 Separate the whites of **3 eggs** into a stainless steel bowl.
 Beat the eggs until they form stiff peaks.
@@ -311,9 +361,11 @@ Fold the egg mixture through the dry ingredients.
 Pipe the mixture onto a baking tray (with baking paper).
 Cook at 140C for 50 minutes.
 
+{% end %}
+
 # Desserts
 
-## Annie's Pavlova
+{% accordion(title="Annie's Pavlova") %}
 
 Separate the whites of **5 eggs** into a stainless steel or glass bowl.
 Yes, the material is important!
@@ -328,7 +380,9 @@ Cook in a 140C oven for 1 to 1 1/4 hours or until it is stiff to the touch and s
 Remove from the oven and flip onto a plate to cool.
 When cool, top with whipped cream (**cream** and **1 teaspoon icing sugar**), fruit and chocolate.
 
-## Unobjectionable Brownie
+{% end %}
+
+{% accordion(title="Unobjectionable Brownie") %}
 
 Combine (almost) all of the ingredients in a large food processor.
 One **400ml can black beans**, **2 tbsp cocoa powder**, **1/2 cup oats**, **1 tsp salt**, **1/3 cup maple syrup, agave or honey**, **1/4 cup coconut oil**, **2 tsp vanilla extract** and **1/2 tsp baking powder**.
@@ -336,9 +390,11 @@ After the mixture is blended, mix in **1/2 cup chocolate chips**.
 
 Pour the mixture into a tin lined with baking paper and bake at 180C for 18 minutes.
 
+{% end %}
+
 # Puddings
 
-## Custard
+{% accordion(title="Custard") %}
 
 (This is a great way to use up the leftover egg yolks from a pavlova.)
 
@@ -355,7 +411,9 @@ Do this slowly, too quick and the custard will curdle.
 Return the custard to the saucepan and cook on a low heat.
 Stir the mixture constantly until it thickens.
 
-## Chocolate Pudding
+{% end %}
+
+{% accordion(title="Chocolate Pudding") %}
 
 Sift together **1 1/4 cups plain flour**, **1 teaspoon baking powder**, **a pinch of salt**, **3/4 cup sugar** and **1 teaspoon cocoa**.
 Mix **1/2 cup milk** and **90g melted butter** then stir together with the dry ingredients.
@@ -365,7 +423,9 @@ Place in a baking dish/tray or divide the mixture into (four) individual coffee 
 Mix **1/2 cup sugar**, **1/4 cup coconut** and **1 desert spoon cocoa** then sprinkle over the top of the wet mixture.
 Pour **2 cups boiling water** over the mixture then bake in an over at 180C for 45 minutes.
 
-## Lemon Delicious Pudding
+{% end %}
+
+{% accordion(title="Lemon Delicious Pudding") %}
 
 Cream **30g butter** with **3/4 cup caster sugar**.
 Separate the yolk of **2 eggs** and beat them into the creamed butter.
@@ -375,7 +435,11 @@ Fold the egg whites into the main mixture.
 
 Pour the pudding into a greased dish.
 Put this dish into a second and surround with water.
-Bake at 180C for 20 minutes, and then 140C for 25 minutes. ### Date Slice
+Bake at 180C for 20 minutes, and then 140C for 25 minutes.
+
+{% end %}
+
+{% accordion(title="Date Slice") %}
 
 Finely chop **250g soft dates**.
 Mix **100g almond flour**, **100g small walnut pieces** and **1 tablespoon cocoa** in a large bowl.
@@ -384,7 +448,9 @@ It's quite hard to stir, so I suggest using your hands.
 
 Press into a tray and refrigerate.
 
-## 'Apple' Crumble
+{% end %}
+
+{% accordion(title="'Apple' Crumble") %}
 
 (Feel free to substitute apples for any other fruit.)
 
@@ -396,19 +462,25 @@ Sprinkle with **cinnamon**.
 
 Cook at 180C for 30 to 45 minutes.
 
+{% end %}
+
 # Batters
 
-## Jackie's Pancakes
+{% accordion(title="Jackie's Pancakes") %}
 
 Combine **1 cup self-raising flour** (or 1 cup flour with 1 teaspoon of baking powder) with **2 tablespoons sugar**.
 Stir in **1 cup milk** and **1 egg**.
 Beat well until the mixture is smooth.
 Cook in a pan with butter.
 
-## Crepes
+{% end %}
+
+{% accordion(title="Crepes") %}
 
 Melt **1 tbsp butter** in a medium pan.
 Whisk **1 egg** and **1/2 cup milk** into **1/3 cup flour**, adding the milk gradually.
 Add a pinch of salt and a larger pinch of sugar.
 If needed thin the mixture out with some water.
 Pour the melted butter into the batter and whisk through.
+
+{% end %}
