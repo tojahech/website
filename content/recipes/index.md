@@ -298,6 +298,22 @@ Bake in a 220C oven for 20 minutes or until brown.
 
 {% end %}
 
+# Cakes
+
+{% accordion(title="Italian Caprese") %}
+
+Separate **4 eggs**.
+Whisk egg yolks with **150g sugar**.
+Melt **150g butter** and **150g dark chocolate**.
+Combine the wet ingredients, then mix in **200g almond flour** and some **orange zest**.
+Add **1 tbsp cointreau**.
+Whisk egg whites to soft peaks.
+Fold the egg whites into the batter.
+Bake at 180C for 30-35 minutes.
+Dust with icing sugar.
+
+{% end %}
+
 # Biscuits
 
 {% accordion(title="Chocolate Peanut Biscuits") %}
