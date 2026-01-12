@@ -1,5 +1,7 @@
 ---
 sort_by: "none"
+aliases: ["abc"]
+title: foo
 ---
 
 # Maths

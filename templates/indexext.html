@@ -1,0 +1,32 @@
+{% extends "layout_split.html" %}
+
+<!-- Homepage template -->
+
+{% block title %}tojahech{% endblock title %}
+
+{% block content %}
+
+<h1 class="title">tojahech</h1>
+
+foo
+
+{% set my_var = 2 -%}
+{{ my_var }}
+
+{% set my_page = get_page(path="contact.md") %}
+{{ my_page.title }}
+
+{% set my_section = get_section(path="_index.md") %}
+{{ my_section.title }}
+
+{% for post in my_section.pages %}
+  <div class="menu-item">
+    <a href="{{ post.permalink }}">{{ post.title }}</a>
+    {{ post.description }}
+  </div> 
+{% endfor %}
+
+
+{{ page.content | safe }}
+
+{% endblock content %}
