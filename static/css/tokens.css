@@ -1,5 +1,58 @@
 :root {
-  /* Colours */
+  /* Maurice Colour Palette */
+
+  --whisper-white: #ebe9e0;
+
+  --marais: #403d41;
+  --teahouse: #666966;
+  --dieskau: #cbc9c5;
+
+  --double-bass: #3c3538;
+  --meercat: #514439;
+  --white-duck: #cfcabb;
+
+  --equatorial-forest: #71845e;
+  --lady-fern: #90a073;
+  --garden-pond: #afc09d;
+
+  --wishard: #527769;
+  --silent-sage: #729986;
+  --diorite: #9cbfaf;
+
+  --angry-ocean: #4e6563;
+  --classic-calm: #6a8783;
+  --duck-egg-blue: #97b2b0;
+
+  --alpha-centuri: #4d5878;
+  --quantum-blue: #6d7a9b;
+  --grey-flannel: #98a5c2;
+
+  --baltic: #39505f;
+  --oceanic: #4f6f81;
+  --post-boy: #7a9bad;
+
+  --berry-smoothie: #885362;
+  --never-forget: #a67284;
+  --strawberry-mousse: #c69eaf;
+
+  --cinnamon-sand: #b77e53;
+  --raw-umber: #cc996a;
+  --lama: #dfb995;
+
+  --terracotta-chip: #c4795d;
+  --italian-clay: #d69579;
+  --diva-rouge: #e7b7a4;
+
+  --splendid-coral: #c9706a;
+  --coral-atoll: #dc8f8d;
+  --pretty-pink: #eab2b3;
+
+  --camellia: #a85c60;
+  --pleasure: #c17c83;
+  --prom: #d9a5ac;
+
+  /* Lamington Colour Palette */
+
   --green-40: #71845e;
   --green-60: #90a073;
   --green-80: #c6d1b5;
@@ -19,20 +72,24 @@
   --yellow-60: #ddc669;
   --yellow-80: #e9ddaf;
 
-  --base-foreground: var(--grey-20);
-  --base-background: var(--white);
+  /* Semantic Colours */
 
-  --highlight: var(--green-40);
+  --base-foreground: var(--meercat);
+  --base-background: var(--whisper-white);
 
-  --alt-foreground: var(--grey-10);
-  --alt-background: var(--green-60);
+  --highlight: var(--silent-sage);
+  --header-color: var(--double-bass);
+  --link-color: var(--classic-calm);
+
+  --alt-foreground: var(--equatorial-forest);
+  --alt-background: var(--garden-pond);
 
   /* Typography */
 
   --font-stack-serif: "Lora", sans-serif;
   --font-stack-sans: "Montserrat", sans-serif;
 
-  --font-size-base: 14px;
+  --font-size-base: 16px;
 
   --font-size-xxs: 0.625rem;
   --font-size-xs: 0.75rem;
@@ -53,7 +110,7 @@
   --font-weight-bold: 900;
 
   /* Sizes */
-  --max-content-width: 600px;
+  --max-content-width: 800px;
 
   /* Spacing */
   --spacing-base: 4px;

@@ -13,11 +13,17 @@
     background-color: var(--base-background);
   }
 
-  p,
+  p {
+    color: var(--base-foreground);
+  }
+
+  a,
   a:link,
   a:visited,
   a:hover {
-    color: var(--base-foreground);
+    text-decoration: none;
+    font-weight: var(--font-weight-semibold);
+    color: var(--link-color);
   }
 
   .title,
@@ -33,24 +39,24 @@
     line-height: var(--line-height-heading);
     margin-top: var(--spacing-4);
     margin-bottom: var(--spacing-3);
-    color: var(--highlight);
+    color: var(--header-color);
   }
 
   .title {
     margin-top: 0;
-    font-size: var(--font-size-xxxl);
-  }
-
-  h1 {
     font-size: var(--font-size-xxl);
   }
 
-  h2 {
+  h1 {
     font-size: var(--font-size-xl);
   }
 
-  h3 {
+  h2 {
     font-size: var(--font-size-l);
+  }
+
+  h3 {
+    font-size: var(--font-size-m);
   }
 
   p {
