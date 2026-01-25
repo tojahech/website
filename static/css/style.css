@@ -135,7 +135,7 @@
     justify-content: center;
   }
 
-  .layout-centered {
+  .layout-box {
     background-color: var(--base-background);
     min-height: 100vh;
     padding: var(--spacing-5);
@@ -144,7 +144,7 @@
     align-items: center;
   }
 
-  .layout-centered .content {
+  .layout-box .content {
     background-color: var(--alt-background);
     color: var(--alt-foreground);
     width: min(100%, var(--max-content-width));
