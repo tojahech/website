@@ -87,10 +87,10 @@
 
   /* Typography */
 
-  --font-stack-serif: "Lora", sans-serif;
+  --font-stack-serif: "Alegreya", sans-serif;
   --font-stack-sans: "Montserrat", sans-serif;
 
-  --font-size-base: 14px;
+  --font-size-base: 16px;
 
   --font-size-xxs: 0.625rem;
   --font-size-xs: 0.75rem;
