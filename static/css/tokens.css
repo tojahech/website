@@ -77,10 +77,10 @@
   --base-foreground: var(--meercat);
   --base-background: var(--whisper-white);
 
-  --highlight: var(--silent-sage);
-  --header-color: var(--double-bass);
-  --link-color: var(--classic-calm);
-  --structure-color: var(--white-duck);
+  --highlight: var(--alpha-centuri);
+  --header-color: var(--equatorial-forest);
+  --link-color: var(--equatorial-forest);
+  --structure-color: var(--garden-pond);
 
   --alt-foreground: var(--equatorial-forest);
   --alt-background: var(--garden-pond);
@@ -88,7 +88,7 @@
   /* Typography */
 
   --font-stack-serif: "Alegreya", sans-serif;
-  --font-stack-sans: "Montserrat", sans-serif;
+  --font-stack-sans: "Lilita One", sans-serif;
 
   --font-size-base: 16px;
 
