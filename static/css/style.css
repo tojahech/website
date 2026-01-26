@@ -81,17 +81,19 @@
     padding: var(--spacing-4) 0;
 
     @media screen and (min-width: 800px) {
-      /* height: 100vh; */
       grid-template-columns: 1fr 2fr;
+
+      .sidebar-wrapper {
+        border-right: 3px dashed var(--structure-color);
+        margin-right: -1.5px;
+        min-height: 100vh;
+      }
     }
 
     .sidebar-wrapper {
       display: flex;
       align-items: center;
       justify-content: right;
-
-      border-right: 3px dashed var(--structure-color);
-      margin-right: -1.5px;
     }
 
     .content-wrapper {
@@ -126,6 +128,7 @@
     main {
       width: min(100%, var(--max-content-width));
       height: fit-content;
+      min-height: 1vh;
     }
 
     footer {
