@@ -86,7 +86,8 @@
       .sidebar-wrapper {
         border-right: 3px dashed var(--structure-color);
         margin-right: -1.5px;
-        min-height: 100vh;
+        /* At least full page, corrected for parent padding */
+        min-height: calc(100vh - 2 * var(--spacing-4));
       }
     }
 
