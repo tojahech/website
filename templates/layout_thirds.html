@@ -1,24 +1,13 @@
 {% extends "base.html" %}
 
 {% block layout %}
-  <body class="layout-thirds">
+  <div class="layout layout-thirds">
       <div class="sidebar-wrapper">
       </div>
       <div class="content-wrapper">
-        <header>
-          <menu>
-            tojahech
-            <a href="/"><img src="/icons/home.svg" /></a>
-            <a href="/"><img src="/icons/index.svg" /></a>
-            <a href="/contact"><img src="/icons/contact.svg" /></a>
-          </menu>
-        </header>
         <main>
           {% block content %} {% endblock %}
         </main>
-        <footer>
-          © 2026 tojahech
-        </footer>
       </div>
-  </body>
+  </div>
 {% endblock layout %}
