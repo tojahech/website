@@ -11,9 +11,6 @@
     font-family: var(--font-stack-serif);
     line-height: var(--line-height-text);
     background-color: var(--base-background);
-  }
-
-  p {
     color: var(--base-foreground);
   }
 
@@ -77,34 +74,39 @@
   header {
     display: flex;
     justify-content: right;
+    align-items: center;
+    gap: var(--spacing-2);
     height: var(--spacing-4);
     padding: var(--spacing-2);
+
     font-family: var(--font-stack-sans);
-    font-size: var(--font-size-s);
+    font-size: var(--font-size-m);
     font-variant: small-caps;
+    font-weight: var(--font-weight-light);
+    color: var(--base-foreground);
 
-    menu {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-2);
-
-      img {
-        height: 1.2rem;
-      }
+    /* Fake-ish icons using CSS masks to enable svg files with CSS styling */
+    .icon {
+      width: 1em;
+      height: 1em;
+      display: block;
+      background-color: var(--base-foreground);
+      mask-size: contain;
+      mask-repeat: no-repeat;
     }
   }
 
   footer {
     display: flex;
     justify-content: center;
-    height: var(--spacing-4);
+    height: var(--spacing-5);
     padding: var(--spacing-2);
     font-size: var(--font-size-s);
   }
 
   .layout {
     /* At least full page, corrected for header, footer, and padding */
-    min-height: calc(100vh - var(--spacing-4) - var(--spacing-4));
+    min-height: calc(100vh - var(--spacing-4) - var(--spacing-5));
   }
 
   .layout-thirds {
