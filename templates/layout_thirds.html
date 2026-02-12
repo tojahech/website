@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
 {% block layout %}
-  <div class="layout layout-thirds">
-      <div class="sidebar-wrapper">
-      </div>
-      <div class="content-wrapper">
-        <main>
-          {% block content %} {% endblock %}
-        </main>
-      </div>
+  <div class="layout layout-thirds {% if page.extra.layout_class %} {{ page.extra.layout_class }}{% endif %}">
+    <div class="sidebar-wrapper">
+    </div>
+    <div class="content-wrapper">
+      <main>
+        {% block content %} {% endblock %}
+      </main>
+    </div>
   </div>
 {% endblock layout %}

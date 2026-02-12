@@ -1,6 +1,8 @@
----
-title: "Contact"
-template: "page_box.html"
----
++++
+title = "Contact"
+
+[extra]
+layout_class = "center"
++++
 
 email: tom@tojahech.com
