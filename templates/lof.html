@@ -1,0 +1,20 @@
+{% extends "layout_thirds.html" %}
+
+{% block title %}{{ page.title }}{% endblock title %} 
+
+{% block content %}
+  {% if page.title %}
+    <h1 class="title">{{ page.title }}</h1>
+  {% endif %}
+
+  {% set my_section = get_section(path="_index.md") %}
+
+  {% for post in my_section.pages %}
+    <div class="menu-item">
+      <a href="{{ post.permalink }}">{{ post.title }}</a>
+      {{ post.description }}
+    </div> 
+  {% endfor %}
+
+  {{ page.content | safe }}
+{% endblock content %}
