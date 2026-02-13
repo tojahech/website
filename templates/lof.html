@@ -10,10 +10,12 @@
   {% set my_section = get_section(path="_index.md") %}
 
   {% for post in my_section.pages %}
-    <div class="menu-item">
-      <a href="{{ post.permalink }}">{{ post.title }}</a>
-      {{ post.description }}
-    </div> 
+    {% if not post.extra.hidden %}
+      <div class="menu-item">
+        <a href="{{ post.permalink }}">{{ post.title }}</a>
+        {{ post.description }}
+      </div> 
+    {% endif %}
   {% endfor %}
 
   {{ page.content | safe }}
