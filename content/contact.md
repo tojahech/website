@@ -1,8 +1,8 @@
 +++
 title = "Contact"
+template = "centered.html"
 
 [extra]
-layout_class = "center"
 hidden = true
 +++
 

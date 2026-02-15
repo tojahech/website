@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block layout %}
+  <div class="layout layout-thirds abc layout-thirds-centered">
+    <div class="sidebar-wrapper">
+    </div>
+
+    <div class="content-wrapper">
+      <main>
+        {% block content %} {% endblock %}
+      </main>
+    </div>
+  </div>
+{% endblock layout %}

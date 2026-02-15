@@ -161,8 +161,10 @@
     align-items: center;
   }
 
-  .center .content-wrapper {
-    justify-content: center;
+  .layout-thirds-centered {
+    .content-wrapper {
+      justify-content: center;
+    }
   }
 }
 
