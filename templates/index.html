@@ -1,17 +1,11 @@
-{% extends "layout_thirds.html" %}
+{% extends "layout_thirds_centered.html" %}
 
 {% block title %}tojahech{% endblock title %}
 
 {% block content %}
 
 <h1 class="title">tojahech</h1>
-
-{% for post in section.pages %}
-  <div class="menu-item">
-    <a href="{{ post.permalink }}">{{ post.title }}</a>
-    {{ post.description }}
-  </div> 
-{% endfor %}
+<p>Personal website, containing various little bits of fluff I find interesting.</p>
 
 {{ section.content | safe }}
 
