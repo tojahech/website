@@ -160,6 +160,7 @@
 }
 
 @layer components {
+  /* Utility class, so common to flex a row with centered spaced items */
   .row {
     display: flex;
     gap: var(--spacing-2);
@@ -180,26 +181,18 @@
     }
   }
 
+  /* Accordion */
   .accordion {
     summary {
+      font-family: var(--font-stack-sans);
+      font-variant: small-caps;
       font-weight: var(--font-weight-bold);
-      background-color: var(--green-80);
-      border-radius: var(--radius-s);
       padding: var(--spacing-2);
-      /* list-style: none; */
     }
 
     div {
-      padding: var(--spacing-3);
+      padding: var(--spacing-2) var(--spacing-4);
     }
-  }
-
-  .accordion + .accordion {
-    margin-top: var(--spacing-3);
-  }
-
-  .accordion:open + .accordion {
-    margin-top: 0;
   }
 
   /* Fake-ish icons using CSS masks to enable svg files with CSS styling */
