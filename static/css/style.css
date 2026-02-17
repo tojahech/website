@@ -88,16 +88,6 @@
     font-variant: small-caps;
     font-weight: var(--font-weight-light);
     color: var(--base-foreground);
-
-    /* Fake-ish icons using CSS masks to enable svg files with CSS styling */
-    .icon {
-      width: 1em;
-      height: 1em;
-      display: block;
-      background-color: var(--base-foreground);
-      mask-size: contain;
-      mask-repeat: no-repeat;
-    }
   }
 
   footer {
@@ -173,6 +163,12 @@
 }
 
 @layer components {
+  .row {
+    display: flex;
+    gap: var(--spacing-2);
+    align-items: center;
+  }
+
   /* Trick to create a line between menu items */
   /* Any menu item that follows another menu item will have separating line */
   .menu-item + .menu-item {
@@ -207,5 +203,15 @@
 
   .accordion:open + .accordion {
     margin-top: 0;
+  }
+
+  /* Fake-ish icons using CSS masks to enable svg files with CSS styling */
+  .icon {
+    width: 1em;
+    height: 1em;
+    display: block;
+    background-color: var(--base-foreground);
+    mask-size: contain;
+    mask-repeat: no-repeat;
   }
 }
