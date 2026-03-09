@@ -1,5 +1,8 @@
 [tools]
 typos = "latest"
+zola = "0.21.0"
 
-[tasks.spellcheck]
-run = "typos"
+[tasks]
+build = "zola build"
+watch = "zola serve"
+spellcheck = "typos"
