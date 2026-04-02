@@ -6,4 +6,4 @@ template = "centered.html"
 hidden = true
 +++
 
-email: tom@tojahech.com
+email: tom@tojahech<!--.example-->.com
