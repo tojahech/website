@@ -157,6 +157,18 @@ Top the dish with some more crushed peanuts, the green parts of the spring onion
 
 {% end %}
 
+{% accordion(title="Carbonara") %}
+
+**250g spaghetti** in salted water.
+
+Mix **1 egg** and **2 egg yolks** in a bowl, add pepper and **1/4 cup hard cheese**.
+Saute **pork** in **olive oil**.
+Add the cooked pasta to the pork and mix.
+Add the warm ingredients to the egg, stirring quickly to cook.
+If necessary, return to low heat and add a splash of pasta water.
+
+{% end %}
+
 # Soups
 
 {% accordion(title="Creamy Pumpkin Soup") %}
