@@ -391,7 +391,7 @@ Cook at 140C for 50 minutes.
 
 {% end %}
 
-# Desserts
+# Desserts and puddings
 
 {% accordion(title="Annie's Pavlova") %}
 
@@ -420,8 +420,6 @@ Pour the mixture into a tin lined with baking paper and bake at 180C for 18 minu
 
 {% end %}
 
-# Puddings
-
 {% accordion(title="Custard") %}
 
 (This is a great way to use up the leftover egg yolks from a pavlova.)
@@ -448,8 +446,15 @@ Mix **1/2 cup milk** and **90g melted butter** then stir together with the dry i
 
 Place in a baking dish/tray or divide the mixture into (four) individual coffee mugs.
 
-Mix **1/2 cup sugar**, **1/4 cup coconut** and **1 desert spoon cocoa** then sprinkle over the top of the wet mixture.
+Mix **1/2 cup sugar**, **1/4 cup coconut** and **1 dessert spoon cocoa** then sprinkle over the top of the wet mixture.
 Pour **2 cups boiling water** over the mixture then bake in an over at 180C for 45 minutes.
+
+{% end %}
+
+{% accordion(title="Rice Pudding") %}
+
+Combine **1 cup short grain rice**, **2 cups water**, **3 cups milk**, **1/4 cup caster sugar**, and **vanilla essence** in a pot.
+Simmer slow, stirring frequently.
 
 {% end %}
 
