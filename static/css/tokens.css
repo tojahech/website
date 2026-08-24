@@ -72,14 +72,21 @@
   --yellow-60: #ddc669;
   --yellow-80: #e9ddaf;
 
+  /* Vine Colours */
+
+  --vine-30: #6f7f5e;
+  --vine-40: #7b8a68;
+  --vine-50: #9fb188;
+  --vine-90: #f2f1e5;
+
   /* Semantic Colours */
 
   --base-foreground: var(--meercat);
-  --base-background: var(--whisper-white);
+  --base-background: var(--vine-90);
 
   --highlight: var(--alpha-centuri);
-  --header-color: var(--equatorial-forest);
-  --link-color: var(--equatorial-forest);
+  --header-color: var(--vine-30);
+  --link-color: var(--vine-30);
   --structure-color: var(--garden-pond);
 
   --alt-foreground: var(--equatorial-forest);
