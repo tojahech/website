@@ -12,7 +12,7 @@ function createVineGrowth(host, userOptions) {
   const O = Object.assign(
     {
       background: "#f2f1e5",
-      paper: false, // mottled paper wash + fine grain
+      paper: true, // mottled paper wash + fine grain
       speed: 2.6, // px each vine advances per frame
       scale: 1, // overall size of leaves and stems
       maxActive: 12, // vines growing at the same time
@@ -21,6 +21,12 @@ function createVineGrowth(host, userOptions) {
       ghostRatio: 0.42, // share of vines drawn into the faded back layer
       gravity: 0, // 0 = climbing in all directions, 1 = trailing down
       seedFrom: "edges", // 'edges' | 'top' | 'scatter'
+      originX: 0.5, // where new vines enter, as a fraction of width
+      spread: 1, // how far either side of originX they scatter
+      keepOut: {}, // soft margins as fractions, e.g. { right: .34 }
+      keepOutForce: 320, // how hard those margins push back
+      maxTurn: 0.055, // radians per step — lower is more languid
+      fade: {}, // edges that dissolve, e.g. { right: .4 }
       blooms: 0.3, // share of vines that carry small flowers
       leafSpacing: 26, // px of stem between leaf nodes
       leafSize: 15, // px, longest leaves
@@ -78,6 +84,8 @@ function createVineGrowth(host, userOptions) {
     H = 0,
     dpr = 1;
   let grid,
+    usable,
+    usableCells,
     cols,
     rows,
     cellsTouched,
@@ -108,6 +116,41 @@ function createVineGrowth(host, userOptions) {
     rows = Math.ceil(H / cellSize);
     grid = new Uint16Array(cols * rows);
     cellsTouched = 0;
+
+    // Cells inside a keep-out margin are not expected to fill, so they are
+    // left out of the coverage sum — otherwise growth never reaches target.
+    usable = new Uint8Array(cols * rows);
+    usableCells = 0;
+    for (let cy = 0; cy < rows; cy++) {
+      for (let cx = 0; cx < cols; cx++) {
+        const open =
+          edgePressure((cx + 0.5) * cellSize, (cy + 0.5) * cellSize) < 40;
+        usable[cy * cols + cx] = open ? 1 : 0;
+        if (open) usableCells++;
+      }
+    }
+    usableCells = Math.max(1, usableCells);
+    applyFade();
+  }
+
+  /* Dissolve the chosen edges so the panel has no hard boundary. */
+  function applyFade() {
+    const f = O.fade || {};
+    const ramp = (dir, amt) =>
+      `linear-gradient(to ${dir}, rgba(0,0,0,0) 0%, ` +
+      `rgba(0,0,0,.4) ${Math.round(amt * 45)}%, rgba(0,0,0,1) ${Math.round(amt * 100)}%)`;
+    const grads = [];
+    if (f.right) grads.push(ramp("left", f.right));
+    if (f.left) grads.push(ramp("right", f.left));
+    if (f.bottom) grads.push(ramp("top", f.bottom));
+    if (f.top) grads.push(ramp("bottom", f.top));
+    const value = grads.join(", ");
+    for (const c of [back, front]) {
+      c.style.maskImage = c.style.webkitMaskImage = value;
+      // several gradients must overlap, not add up
+      c.style.maskComposite = grads.length > 1 ? "intersect" : "";
+      c.style.webkitMaskComposite = grads.length > 1 ? "source-in" : "";
+    }
   }
 
   function paintPaper() {
@@ -154,8 +197,33 @@ function createVineGrowth(host, userOptions) {
       cy = (y / cellSize) | 0;
     if (cx < 0 || cy < 0 || cx >= cols || cy >= rows) return;
     const i = cy * cols + cx;
-    if (grid[i] === 0) cellsTouched++;
+    if (grid[i] === 0 && usable[i]) cellsTouched++;
     grid[i] = Math.min(600, grid[i] + weight);
+  }
+
+  /* A soft field that builds up towards a margin. Because the vines steer
+     by comparing densities ahead of them, this reads as the stem leaning
+     away and curling back well before it reaches the edge — not as a wall. */
+  function edgePressure(x, y) {
+    const K = O.keepOut;
+    let p = 0;
+    if (K.right) {
+      const t = (x - W * (1 - K.right)) / (W * K.right);
+      if (t > 0) p += t * t * O.keepOutForce;
+    }
+    if (K.left) {
+      const t = (W * K.left - x) / (W * K.left);
+      if (t > 0) p += t * t * O.keepOutForce;
+    }
+    if (K.bottom) {
+      const t = (y - H * (1 - K.bottom)) / (H * K.bottom);
+      if (t > 0) p += t * t * O.keepOutForce;
+    }
+    if (K.top) {
+      const t = (H * K.top - y) / (H * K.top);
+      if (t > 0) p += t * t * O.keepOutForce;
+    }
+    return p;
   }
 
   function density(x, y) {
@@ -164,14 +232,20 @@ function createVineGrowth(host, userOptions) {
     if (x < -m || y < -m || x > W + m || y > H + m) return 900;
     const cx = clamp((x / cellSize) | 0, 0, cols - 1);
     const cy = clamp((y / cellSize) | 0, 0, rows - 1);
-    return grid[cy * cols + cx];
+    return grid[cy * cols + cx] + edgePressure(x, y);
+  }
+
+  // Triangular distribution: seeds cluster around originX and thin out.
+  function seedX() {
+    const t = (Math.random() + Math.random()) / 2;
+    return W * (O.originX + (t - 0.5) * O.spread);
   }
 
   function emptySpot() {
     let best = null,
       bestD = Infinity;
     for (let i = 0; i < 40; i++) {
-      const x = rnd(W * 0.05, W * 0.95),
+      const x = seedX(),
         y = rnd(H * 0.05, H * 0.95);
       const d = density(x, y);
       if (d < bestD) {
@@ -182,7 +256,7 @@ function createVineGrowth(host, userOptions) {
     return best;
   }
 
-  const coverage = () => cellsTouched / (cols * rows);
+  const coverage = () => cellsTouched / usableCells;
 
   /* ---------- botany --------------------------------------------- */
   function makeVine(x, y, angle, opt) {
@@ -217,6 +291,7 @@ function createVineGrowth(host, userOptions) {
 
   function spawn() {
     const edge = O.seedFrom;
+    const K = O.keepOut;
     let x, y, a;
 
     if (edge === "scatter" || (edge === "edges" && Math.random() < 0.3)) {
@@ -225,17 +300,29 @@ function createVineGrowth(host, userOptions) {
       y = p.y;
       a = rnd(0, TAU);
     } else if (edge === "top") {
-      x = rnd(-W * 0.05, W * 1.05);
+      x = seedX();
       y = rnd(-30, -4);
-      a = Math.PI / 2 + rnd(-0.7, 0.7);
+      // aim slightly back towards the origin column, so the curtain
+      // opens outwards from the middle instead of drifting one way
+      a = Math.PI / 2 + rnd(-0.6, 0.6) + (x > W * O.originX ? -0.25 : 0.25);
     } else {
-      const side = (Math.random() * 4) | 0;
+      // don't enter from a side that is being held clear
+      const sides = [0, 1, 2, 3].filter(
+        (s) =>
+          !(
+            (s === 0 && K.top) ||
+            (s === 1 && K.bottom) ||
+            (s === 2 && K.left) ||
+            (s === 3 && K.right)
+          ),
+      );
+      const side = pick(sides.length ? sides : [0]);
       if (side === 0) {
-        x = rnd(0, W);
+        x = seedX();
         y = -14;
         a = Math.PI / 2;
       } else if (side === 1) {
-        x = rnd(0, W);
+        x = seedX();
         y = H + 14;
         a = -Math.PI / 2;
       } else if (side === 2) {
@@ -521,7 +608,7 @@ function createVineGrowth(host, userOptions) {
       v.wander = clamp(v.wander * 0.985 + rnd(-0.007, 0.007), -0.05, 0.05);
 
       // look ahead three ways and lean towards open space
-      const look = 46;
+      const look = 58;
       const d = (off) =>
         density(
           v.x + Math.cos(v.angle + off) * look,
@@ -532,7 +619,9 @@ function createVineGrowth(host, userOptions) {
         wR = 1 / (1 + d(0.6));
       const seek = (-0.6 * wL + 0.6 * wR) / (wL + wC + wR);
 
-      v.angle += v.wander + seek * 0.4;
+      // A cap on turn rate is what keeps avoidance looking like a stem
+      // sweeping around rather than snapping back on itself.
+      v.angle += clamp(v.wander + seek * 0.4, -O.maxTurn, O.maxTurn);
 
       if (O.gravity) {
         // optional trailing/hanging bias
@@ -541,11 +630,13 @@ function createVineGrowth(host, userOptions) {
       }
 
       // now and then the stem throws a tendril curl
-      if (Math.random() < 0.006 && t < 0.8) {
+      if (Math.random() < 0.006 && t < 0.8 && edgePressure(v.x, v.y) < 20) {
         v.curlUntil = v.life + rnd(50, 130);
         v.curlDir = Math.random() < 0.5 ? 1 : -1;
         v.curlAmt = rnd(0.022, 0.05);
       }
+    } else if (edgePressure(v.x, v.y) > 30) {
+      v.curlUntil = 0; // a curl still yields to a margin
     } else {
       v.angle += v.curlDir * v.curlAmt;
     }
@@ -709,12 +800,55 @@ function createVineGrowth(host, userOptions) {
 
 /* ------------------------------------------------------------------ */
 
-const garden = createVineGrowth(document.getElementsByClassName("sidebar")[0], {
-  // background: "#f1f1e4",
-  // speed: 2.6,
-  // coverage: 0.66,
-  // scale: 1,
-});
+const host = document.getElementsByClassName("sidebar")[0];
+const tall = matchMedia("(min-width: 761px)");
+let garden = null;
+
+// A curtain falling down the rail reads well when it's tall and narrow;
+// in the short band on small screens it just drains off the bottom, so
+// seed from the edges instead.
+function plant() {
+  if (garden) garden.destroy();
+  garden = createVineGrowth(
+    host,
+    tall.matches
+      ? {
+          background: "#eef0e2",
+          seedFrom: "top",
+          gravity: 0.7,
+          scale: 0.82,
+          speed: 2.2,
+          maxActive: 8,
+          maxVines: 160,
+          coverage: 0.58,
+          ghostRatio: 0.46,
+          blooms: 0,
+          originX: 0.4,
+          spread: 0.5, // enter near the middle of the rail
+          keepOut: { right: 0.4, left: 0.05 }, // lean away from the text
+          fade: { right: 0.4 },
+        } // and dissolve over the same zone
+      : {
+          background: "#eef0e2",
+          seedFrom: "edges",
+          gravity: 0.2,
+          scale: 0.7,
+          speed: 2.6,
+          maxActive: 10,
+          maxVines: 120,
+          coverage: 0.5,
+          ghostRatio: 0.46,
+          blooms: 0,
+          originX: 0.5,
+          spread: 0.8,
+          keepOut: { bottom: 0.32 },
+          fade: { bottom: 0.32 },
+        },
+  );
+}
+
+plant();
+tall.addEventListener("change", plant);
 
 document.getElementById("regrow").addEventListener("click", () => {
   garden.reset();

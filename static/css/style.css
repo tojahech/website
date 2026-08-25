@@ -84,17 +84,19 @@
   .layout-thirds {
     display: grid;
     grid-template-columns: 1fr;
-    grid-auto-rows: minmax(180px, max-content);
     width: 100%;
+
+    .sidebar {
+      height: 180px;
+    }
 
     @media screen and (min-width: 800px) {
       grid-template-columns: 1fr 2fr;
-    }
-
-    .sidebar {
-      display: flex;
-      align-items: center;
-      justify-content: right;
+      .sidebar {
+        height: 100vh;
+        position: sticky;
+        top: 0;
+      }
     }
 
     .content {
