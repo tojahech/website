@@ -1,16 +1,6 @@
-/* ------------------------------------------------------------------ *
- *  createVineGrowth(element, options)
- *
- *  Grows a procedural climbing-vine pattern inside any element.
- *  Two stacked canvases: a pale "ghost" layer behind, and a
- *  multiply-blended layer in front, so overlapping leaves deepen
- *  in colour the way washes of watercolour do.
- *
- *  Returns { start, stop, reset, destroy, done }.
- * ------------------------------------------------------------------ */
+// Returns { start, stop, reset, destroy, done }.
 function createVineGrowth(host, userOptions) {
-  // Define config for the generation
-  const Options = Object.assign(
+  const options = Object.assign(
     {
       background: "#f2f1e5",
       paper: true, // mottled paper wash + fine grain
@@ -53,38 +43,42 @@ function createVineGrowth(host, userOptions) {
 
   /* ---------- canvases ------------------------------------------- */
 
-  // If the host element has static position, we will nto be able to overlay the canvases below using absolute positioning
+  // If the host element has static position, we will not be able to overlay the canvases below using absolute positioning
   if (getComputedStyle(host).position === "static")
     host.style.position = "relative";
 
-  // Create canvases to store the foreground and background vine drawings
-  const back = document.createElement("canvas");
-  const front = document.createElement("canvas");
-
-  // Lay the cavases over the top of the host element, covering it completely
-  for (const c of [back, front]) {
-    Object.assign(c.style, {
+  const layers = ["source-over", "multiply"].map((blend) => {
+    const canvas = document.createElement("canvas");
+    Object.assign(canvas.style, {
       position: "absolute",
       inset: "0",
       width: "100%",
       height: "100%",
       display: "block",
       pointerEvents: "none",
+      mixBlendMode: blend,
     });
-    host.appendChild(c);
-  }
-  front.style.mixBlendMode = "multiply";
+    host.appendChild(canvas);
+    return { canvas, ctx: canvas.getContext("2d") };
+  });
+  const [{ ctx: bg }, { ctx: fg }] = layers;
 
-  const bg = back.getContext("2d");
-  const fg = front.getContext("2d");
-
-  // Utility functions
   const TAU = Math.PI * 2;
   const rnd = (a, b) => a + Math.random() * (b - a);
   const pick = (arr) => arr[(Math.random() * arr.length) | 0];
   const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
 
-  // If the user has reduceMotion preference, follow it
+  const EDGES = [
+    { name: "top",    rampDir: "bottom", axis: "y", invert: true,
+      spawn: () => ({ x: seedX(), y: -14, a: Math.PI / 2 }) },
+    { name: "bottom", rampDir: "top",    axis: "y", invert: false,
+      spawn: () => ({ x: seedX(), y: H + 14, a: -Math.PI / 2 }) },
+    { name: "left",   rampDir: "right",  axis: "x", invert: true,
+      spawn: () => ({ x: -14, y: rnd(0, H), a: 0 }) },
+    { name: "right",  rampDir: "left",   axis: "x", invert: false,
+      spawn: () => ({ x: W + 14, y: rnd(0, H), a: Math.PI }) },
+  ];
+
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   let W = 0,
@@ -103,18 +97,15 @@ function createVineGrowth(host, userOptions) {
     W = Math.max(1, Math.round(r.width));
     H = Math.max(1, Math.round(r.height));
     dpr = Math.min(2, window.devicePixelRatio || 1);
-    for (const [c, ctx] of [
-      [back, bg],
-      [front, fg],
-    ]) {
-      c.width = W * dpr;
-      c.height = H * dpr;
+    for (const { canvas, ctx } of layers) {
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
     }
-    cols = Math.ceil(W / Options.cellSize);
-    rows = Math.ceil(H / Options.cellSize);
+    cols = Math.ceil(W / options.cellSize);
+    rows = Math.ceil(H / options.cellSize);
     grid = new Uint16Array(cols * rows);
     cellsTouched = 0;
 
@@ -126,8 +117,8 @@ function createVineGrowth(host, userOptions) {
       for (let cx = 0; cx < cols; cx++) {
         const open =
           edgePressure(
-            (cx + 0.5) * Options.cellSize,
-            (cy + 0.5) * Options.cellSize,
+            (cx + 0.5) * options.cellSize,
+            (cy + 0.5) * options.cellSize,
           ) < 40;
         usable[cy * cols + cx] = open ? 1 : 0;
         if (open) usableCells++;
@@ -137,31 +128,26 @@ function createVineGrowth(host, userOptions) {
     applyFade();
   }
 
-  /* Dissolve the chosen edges so the panel has no hard boundary. */
   function applyFade() {
-    const f = Options.fade || {};
+    const f = options.fade || {};
     const ramp = (dir, amt) =>
       `linear-gradient(to ${dir}, rgba(0,0,0,0) 0%, ` +
       `rgba(0,0,0,.4) ${Math.round(amt * 45)}%, rgba(0,0,0,1) ${Math.round(amt * 100)}%)`;
-    const grads = [];
-    if (f.right) grads.push(ramp("left", f.right));
-    if (f.left) grads.push(ramp("right", f.left));
-    if (f.bottom) grads.push(ramp("top", f.bottom));
-    if (f.top) grads.push(ramp("bottom", f.top));
+    const grads = EDGES.filter(({ name }) => f[name])
+      .map(({ name, rampDir }) => ramp(rampDir, f[name]));
     const value = grads.join(", ");
-    for (const c of [back, front]) {
-      c.style.maskImage = c.style.webkitMaskImage = value;
-      // several gradients must overlap, not add up
-      c.style.maskComposite = grads.length > 1 ? "intersect" : "";
-      c.style.webkitMaskComposite = grads.length > 1 ? "source-in" : "";
+    for (const { canvas } of layers) {
+      canvas.style.maskImage = canvas.style.webkitMaskImage = value;
+      canvas.style.maskComposite = grads.length > 1 ? "intersect" : "";
+      canvas.style.webkitMaskComposite = grads.length > 1 ? "source-in" : "";
     }
   }
 
   function paintPaper() {
     bg.save();
-    bg.fillStyle = Options.background;
+    bg.fillStyle = options.background;
     bg.fillRect(0, 0, W, H);
-    if (Options.paper) {
+    if (options.paper) {
       // soft mottling
       for (let i = 0; i < 26; i++) {
         const x = rnd(0, W),
@@ -197,35 +183,26 @@ function createVineGrowth(host, userOptions) {
 
   /* ---------- occupancy grid: how the pattern learns to fill ------ */
   function mark(x, y, weight) {
-    const cx = (x / Options.cellSize) | 0,
-      cy = (y / Options.cellSize) | 0;
+    const cx = (x / options.cellSize) | 0,
+      cy = (y / options.cellSize) | 0;
     if (cx < 0 || cy < 0 || cx >= cols || cy >= rows) return;
     const i = cy * cols + cx;
     if (grid[i] === 0 && usable[i]) cellsTouched++;
     grid[i] = Math.min(600, grid[i] + weight);
   }
 
-  /* A soft field that builds up towards a margin. Because the vines steer
-     by comparing densities ahead of them, this reads as the stem leaning
-     away and curling back well before it reaches the edge — not as a wall. */
   function edgePressure(x, y) {
-    const K = Options.keepOut;
+    const K = options.keepOut;
+    const pos = { x, y }, size = { x: W, y: H };
     let p = 0;
-    if (K.right) {
-      const t = (x - W * (1 - K.right)) / (W * K.right);
-      if (t > 0) p += t * t * Options.keepOutForce;
-    }
-    if (K.left) {
-      const t = (W * K.left - x) / (W * K.left);
-      if (t > 0) p += t * t * Options.keepOutForce;
-    }
-    if (K.bottom) {
-      const t = (y - H * (1 - K.bottom)) / (H * K.bottom);
-      if (t > 0) p += t * t * Options.keepOutForce;
-    }
-    if (K.top) {
-      const t = (H * K.top - y) / (H * K.top);
-      if (t > 0) p += t * t * Options.keepOutForce;
+    for (const { name, axis, invert } of EDGES) {
+      const k = K[name];
+      if (!k) continue;
+      const S = size[axis];
+      const t = invert
+        ? (S * k - pos[axis]) / (S * k)
+        : (pos[axis] - S * (1 - k)) / (S * k);
+      if (t > 0) p += t * t * options.keepOutForce;
     }
     return p;
   }
@@ -234,15 +211,15 @@ function createVineGrowth(host, userOptions) {
     // Outside the box counts as very crowded, so vines curl back inwards.
     const m = 12;
     if (x < -m || y < -m || x > W + m || y > H + m) return 900;
-    const cx = clamp((x / Options.cellSize) | 0, 0, cols - 1);
-    const cy = clamp((y / Options.cellSize) | 0, 0, rows - 1);
+    const cx = clamp((x / options.cellSize) | 0, 0, cols - 1);
+    const cy = clamp((y / options.cellSize) | 0, 0, rows - 1);
     return grid[cy * cols + cx] + edgePressure(x, y);
   }
 
   // Triangular distribution: seeds cluster around originX and thin out.
   function seedX() {
     const t = (Math.random() + Math.random()) / 2;
-    return W * (Options.originX + (t - 0.5) * Options.spread);
+    return W * (options.originX + (t - 0.5) * options.spread);
   }
 
   function emptySpot() {
@@ -279,92 +256,52 @@ function createVineGrowth(host, userOptions) {
       gen: opt.gen,
       wander: rnd(-0.02, 0.02),
       side: Math.random() < 0.5 ? 1 : -1,
-      nextLeaf: rnd(6, Options.leafSpacing),
+      nextLeaf: rnd(6, options.leafSpacing),
       curlUntil: 0,
       curlDir: 1,
       curlAmt: 0,
-      stemCol: pick(ghost ? Options.ghostStem : Options.stem),
-      leafCol: pick(ghost ? Options.ghostLeaf : Options.leaf),
-      leafAlt: pick(ghost ? Options.ghostLeaf : Options.leaf),
+      stemCol: pick(ghost ? options.ghostStem : options.stem),
+      leafCol: pick(ghost ? options.ghostLeaf : options.leaf),
+      leafAlt: pick(ghost ? options.ghostLeaf : options.leaf),
       alpha: ghost ? rnd(0.28, 0.5) : rnd(0.72, 0.92),
-      leafScale: rnd(0.8, 1.25) * Options.scale,
+      leafScale: rnd(0.8, 1.25) * options.scale,
     };
   }
 
   function spawn() {
-    const edge = Options.seedFrom;
-    const K = Options.keepOut;
+    const mode = options.seedFrom;
+    const K = options.keepOut;
     let x, y, a;
 
-    if (edge === "scatter" || (edge === "edges" && Math.random() < 0.3)) {
+    if (mode === "scatter" || (mode === "edges" && Math.random() < 0.3)) {
       const p = emptySpot();
       x = p.x;
       y = p.y;
       a = rnd(0, TAU);
-    } else if (edge === "top") {
+    } else if (mode === "top") {
       x = seedX();
       y = rnd(-30, -4);
-      // aim slightly back towards the origin column, so the curtain
-      // opens outwards from the middle instead of drifting one way
-      a =
-        Math.PI / 2 + rnd(-0.6, 0.6) + (x > W * Options.originX ? -0.25 : 0.25);
+      a = Math.PI / 2 + rnd(-0.6, 0.6) + (x > W * options.originX ? -0.25 : 0.25);
     } else {
-      // don't enter from a side that is being held clear
-      const sides = [0, 1, 2, 3].filter(
-        (s) =>
-          !(
-            (s === 0 && K.top) ||
-            (s === 1 && K.bottom) ||
-            (s === 2 && K.left) ||
-            (s === 3 && K.right)
-          ),
-      );
-      const side = pick(sides.length ? sides : [0]);
-      if (side === 0) {
-        x = seedX();
-        y = -14;
-        a = Math.PI / 2;
-      } else if (side === 1) {
-        x = seedX();
-        y = H + 14;
-        a = -Math.PI / 2;
-      } else if (side === 2) {
-        x = -14;
-        y = rnd(0, H);
-        a = 0;
-      } else {
-        x = W + 14;
-        y = rnd(0, H);
-        a = Math.PI;
-      }
+      const open = EDGES.filter(({ name }) => !K[name]);
+      const e = pick(open.length ? open : [EDGES[0]]);
+      ({ x, y, a } = e.spawn());
       a += rnd(-0.75, 0.75);
     }
 
-    const ghost = Math.random() < Options.ghostRatio;
+    const ghost = Math.random() < options.ghostRatio;
     vines.push(
       makeVine(x, y, a, {
         ghost,
         gen: 0,
         span: rnd(320, 900) * (ghost ? 1.15 : 1),
-        width: rnd(1.5, 2.6) * Options.scale * (ghost ? 0.8 : 1),
+        width: rnd(1.5, 2.6) * options.scale * (ghost ? 0.8 : 1),
       }),
     );
     born++;
   }
 
-  /* Simple pointed blade — used for buds and the smallest new growth. */
-  function drawSimpleLeaf(
-    ctx,
-    x,
-    y,
-    angle,
-    len,
-    wid,
-    curve,
-    colA,
-    colB,
-    alpha,
-  ) {
+  function drawSimpleLeaf({ ctx, x, y, angle, len, wid, curve, colA, colB, alpha }) {
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(angle);
@@ -386,7 +323,6 @@ function createVineGrowth(host, userOptions) {
     ctx.quadraticCurveTo(len * 0.5, curve * 0.7, len * 0.9, curve * 0.55);
     ctx.stroke();
     ctx.restore();
-    mark(x, y, 6);
   }
 
   /* ---------- lobed leaves ---------------------------------------- *
@@ -455,52 +391,32 @@ function createVineGrowth(host, userOptions) {
   }
 
   function shade(hex, f) {
-    if (hex[0] !== "#" || hex.length !== 7) return hex;
-    const n = parseInt(hex.slice(1), 16);
-    return (
-      "rgb(" +
-      [16, 8, 0].map((s) => Math.round(((n >> s) & 255) * f)).join(",") +
-      ")"
+    const [r, g, b] = [1, 3, 5].map((i) =>
+      Math.round(parseInt(hex.slice(i, i + 2), 16) * f),
     );
+    return `rgb(${r},${g},${b})`;
   }
 
-  function drawLeaf(ctx, x, y, angle, len, wid, curve, colA, colB, alpha) {
+  function drawLeaf(leaf) {
+    const { ctx, x, y, angle, len, wid, curve, colA, colB, alpha } = leaf;
     if (
-      Options.leafShape === "ovate" ||
-      (Options.leafShape === "mixed" && Math.random() < 0.4) ||
-      len < Options.leafSize * Options.scale * 0.42
+      options.leafShape === "ovate" ||
+      (options.leafShape === "mixed" && Math.random() < 0.4) ||
+      len < options.leafSize * options.scale * 0.42
     ) {
-      return drawSimpleLeaf(
-        ctx,
-        x,
-        y,
-        angle,
-        len,
-        wid,
-        curve,
-        colA,
-        colB,
-        alpha,
-      );
+      return drawSimpleLeaf(leaf);
     }
 
     const lobes = Math.random() < 0.42 ? 5 : 3;
     const stalk = len * rnd(0.14, 0.26);
     const blade = len - stalk;
-    const { pts, tips } = leafOutline(
-      blade,
-      wid,
-      lobes,
-      rnd(0.06, 0.16),
-      curve,
-    );
+    const { pts, tips } = leafOutline(blade, wid, lobes, rnd(0.06, 0.16), curve);
     const dark = shade(colA, 0.72);
 
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(angle);
 
-    // petiole
     ctx.globalAlpha = alpha * 0.8;
     ctx.strokeStyle = dark;
     ctx.lineWidth = Math.max(0.5, len * 0.035);
@@ -511,7 +427,6 @@ function createVineGrowth(host, userOptions) {
 
     ctx.translate(stalk, 0);
 
-    // blade, lit from the base outwards
     const g = ctx.createLinearGradient(0, -wid, blade, wid);
     g.addColorStop(0, colB);
     g.addColorStop(0.55, colA);
@@ -521,13 +436,11 @@ function createVineGrowth(host, userOptions) {
     tracePath(ctx, pts);
     ctx.fill();
 
-    // pigment pooling along the edge
     ctx.globalAlpha = alpha * 0.3;
     ctx.strokeStyle = dark;
     ctx.lineWidth = Math.max(0.4, blade * 0.035);
     ctx.stroke();
 
-    // a wash settling to one side of the blade
     ctx.globalAlpha = alpha * 0.16;
     ctx.fillStyle = dark;
     ctx.save();
@@ -537,7 +450,6 @@ function createVineGrowth(host, userOptions) {
     ctx.fill();
     ctx.restore();
 
-    // veins radiating to each lobe
     ctx.globalAlpha = alpha * 0.34;
     ctx.strokeStyle = dark;
     ctx.lineWidth = Math.max(0.35, blade * 0.022);
@@ -549,28 +461,25 @@ function createVineGrowth(host, userOptions) {
     ctx.stroke();
 
     ctx.restore();
-    mark(x, y, 6);
   }
 
   function drawBuds(v, x, y, angle, size) {
     const n = 2 + ((Math.random() * 3) | 0);
     for (let i = 0; i < n; i++) {
       const t = i / n;
-      const bx = x + Math.cos(angle) * t * size * 2.2;
-      const by = y + Math.sin(angle) * t * size * 2.2;
       const side = i % 2 ? 1 : -1;
-      drawSimpleLeaf(
-        v.ctx,
-        bx,
-        by,
-        angle + side * rnd(0.5, 0.9),
-        size * (0.42 - t * 0.12),
-        size * 0.18,
-        0,
-        v.leafCol,
-        v.leafAlt,
-        v.alpha * 0.9,
-      );
+      drawSimpleLeaf({
+        ctx: v.ctx,
+        x: x + Math.cos(angle) * t * size * 2.2,
+        y: y + Math.sin(angle) * t * size * 2.2,
+        angle: angle + side * rnd(0.5, 0.9),
+        len: size * (0.42 - t * 0.12),
+        wid: size * 0.18,
+        curve: 0,
+        colA: v.leafCol,
+        colB: v.leafAlt,
+        alpha: v.alpha * 0.9,
+      });
     }
   }
 
@@ -601,14 +510,14 @@ function createVineGrowth(host, userOptions) {
       // sweeping around rather than snapping back on itself.
       v.angle += clamp(
         v.wander + seek * 0.4,
-        -Options.maxTurn,
-        Options.maxTurn,
+        -options.maxTurn,
+        options.maxTurn,
       );
 
-      if (Options.gravity) {
+      if (options.gravity) {
         // optional trailing/hanging bias
         let diff = ((Math.PI / 2 - v.angle + Math.PI * 3) % TAU) - Math.PI;
-        v.angle += diff * 0.012 * Options.gravity;
+        v.angle += diff * 0.012 * options.gravity;
       }
 
       // now and then the stem throws a tendril curl
@@ -626,9 +535,9 @@ function createVineGrowth(host, userOptions) {
     /* advance */
     v.px = v.x;
     v.py = v.y;
-    v.x += Math.cos(v.angle) * Options.speed;
-    v.y += Math.sin(v.angle) * Options.speed;
-    v.life += Options.speed;
+    v.x += Math.cos(v.angle) * options.speed;
+    v.y += Math.sin(v.angle) * options.speed;
+    v.life += options.speed;
 
     /* stem */
     const ctx = v.ctx;
@@ -644,37 +553,32 @@ function createVineGrowth(host, userOptions) {
 
     /* foliage */
     if (v.life >= v.nextLeaf) {
-      const size = Options.leafSize * v.leafScale * (0.45 + taper * 0.75);
-      const r = Math.random();
+      const size = options.leafSize * v.leafScale * (0.45 + taper * 0.75);
 
-      if (r < 0.24) {
+      if (Math.random() < 0.24) {
         drawBuds(v, v.x, v.y, v.angle + v.side * rnd(0.4, 0.8), size);
       } else {
         const paired = Math.random() < 0.42;
         const sides = paired ? [1, -1] : [v.side];
         for (const s of sides) {
           const len = size * rnd(0.8, 1.15);
-          // a scattering of leaves is bleached almost to the paper
-          const pale = !v.ghost && Math.random() < Options.paleLeaves;
-          const cA = pale ? pick(Options.ghostLeaf) : v.leafCol;
-          const cB = pale ? pick(Options.ghostLeaf) : v.leafAlt;
-          drawLeaf(
-            v.ctx,
-            v.x,
-            v.y,
-            v.angle + s * rnd(0.6, 1.15),
+          const pale = !v.ghost && Math.random() < options.paleLeaves;
+          drawLeaf({
+            ctx: v.ctx, x: v.x, y: v.y,
+            angle: v.angle + s * rnd(0.6, 1.15),
             len,
-            len * rnd(0.44, 0.6),
-            len * s * 0.12,
-            cA,
-            cB,
-            pale ? v.alpha * 0.75 : v.alpha,
-          );
+            wid: len * rnd(0.44, 0.6),
+            curve: len * s * 0.12,
+            colA: pale ? pick(options.ghostLeaf) : v.leafCol,
+            colB: pale ? pick(options.ghostLeaf) : v.leafAlt,
+            alpha: pale ? v.alpha * 0.75 : v.alpha,
+          });
         }
       }
+      mark(v.x, v.y, 6);
       v.side *= -1;
       v.nextLeaf =
-        v.life + Options.leafSpacing * Options.scale * rnd(0.65, 1.4);
+        v.life + options.leafSpacing * options.scale * rnd(0.65, 1.4);
     }
 
     /* branch */
@@ -698,7 +602,7 @@ function createVineGrowth(host, userOptions) {
     const gone = v.x < -60 || v.y < -60 || v.x > W + 60 || v.y > H + 60;
     if (v.life >= v.span || gone) {
       if (!gone)
-        drawBuds(v, v.x, v.y, v.angle, Options.leafSize * v.leafScale * 0.8);
+        drawBuds(v, v.x, v.y, v.angle, options.leafSize * v.leafScale * 0.8);
       return false;
     }
     return true;
@@ -709,8 +613,8 @@ function createVineGrowth(host, userOptions) {
     for (let i = vines.length - 1; i >= 0; i--) {
       if (!grow(vines[i])) vines.splice(i, 1);
     }
-    const roomToGrow = coverage() < Options.coverage && born < Options.maxVines;
-    if (roomToGrow && vines.length < Options.maxActive) spawn();
+    const roomToGrow = coverage() < options.coverage && born < options.maxVines;
+    if (roomToGrow && vines.length < options.maxActive) spawn();
     if (!roomToGrow && vines.length === 0) finished = true;
   }
 
@@ -734,7 +638,7 @@ function createVineGrowth(host, userOptions) {
     vines = [];
     born = 0;
     finished = false;
-    for (let i = 0; i < Math.min(4, Options.maxActive); i++) spawn();
+    for (let i = 0; i < Math.min(4, options.maxActive); i++) spawn();
   }
 
   function start() {
@@ -762,8 +666,7 @@ function createVineGrowth(host, userOptions) {
   function destroy() {
     stop();
     ro.disconnect();
-    back.remove();
-    front.remove();
+    layers.forEach(({ canvas }) => canvas.remove());
   }
 
   reset();
