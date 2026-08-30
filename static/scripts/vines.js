@@ -4,7 +4,8 @@ function createVineGrowth(host) {
     paper: true,
     speed: 2.2,
     scale: 0.7,
-    maxActive: 10,
+    startingVines: 4,
+    maxActiveVines: 10,
     maxVines: 140,
     coverage: 0.58,
     ghostRatio: 0.46,
@@ -103,10 +104,7 @@ function createVineGrowth(host) {
     dpr = 1;
   let grid, usable, usableCells, cols, rows, cellsTouched;
   let vines = [],
-    born = 0,
-    raf = null,
-    running = false,
-    finished = false;
+    born = 0;
 
   /* ---------- setup ---------------------------------------------- */
   function measure() {
@@ -300,7 +298,7 @@ function createVineGrowth(host) {
     };
   }
 
-  function spawn() {
+  function spawnVine() {
     const mode = options.seedFrom;
     const K = options.keepOut;
     let x, y, a;
@@ -660,61 +658,77 @@ function createVineGrowth(host) {
     return true;
   }
 
+  //
+  // Animation controller
+  //
+  const animationDelay = 200;
+
+  //  State
+  let currentFrame = null;
+  let isRunning = false;
+  let isFinished = false;
+  let startTimer;
+
   /* ---------- loop ------------------------------------------------ */
   function tick() {
     for (let i = vines.length - 1; i >= 0; i--) {
       if (!grow(vines[i])) vines.splice(i, 1);
     }
     const roomToGrow = coverage() < options.coverage && born < options.maxVines;
-    if (roomToGrow && vines.length < options.maxActive) spawn();
-    if (!roomToGrow && vines.length === 0) finished = true;
+    if (roomToGrow && vines.length < options.maxActiveVines) spawnVine();
+    if (!roomToGrow && vines.length === 0) isFinished = true;
   }
 
   function frame() {
     const steps = reduceMotion ? 400 : 1;
-    for (let i = 0; i < steps && !finished; i++) tick();
-    if (finished) {
-      running = false;
-      raf = null;
+    for (let i = 0; i < steps && !isFinished; i++) tick();
+    if (isFinished) {
+      isRunning = false;
+      currentFrame = null;
       return;
     }
-    raf = requestAnimationFrame(frame);
+    currentFrame = requestAnimationFrame(frame);
   }
 
   /* ---------- api -------------------------------------------------- */
-  function reset() {
-    stop();
+  function stopAnimation() {
+    isRunning = false;
+    if (currentFrame) cancelAnimationFrame(currentFrame);
+    currentFrame = null;
+  }
+
+  function startAnimation() {
+    clearTimeout(startTimer);
+    startTimer = setTimeout(() => {
+      if (isRunning || isFinished) return;
+      isRunning = true;
+      currentFrame = requestAnimationFrame(frame);
+    }, animationDelay);
+  }
+
+  function render() {
+    stopAnimation();
     measure();
     paintPaper();
     fg.clearRect(0, 0, W, H);
     vines = [];
     born = 0;
-    finished = false;
-    for (let i = 0; i < Math.min(4, options.maxActive); i++) spawn();
+    isFinished = false;
+    const startingVines = Math.min(
+      options.startingVines,
+      options.maxActiveVines,
+    );
+    for (let i = 0; i < startingVines; i++) spawnVine();
+    startAnimation();
   }
 
-  function start() {
-    if (running || finished) return;
-    running = true;
-    raf = requestAnimationFrame(frame);
-  }
-
-  function stop() {
-    running = false;
-    if (raf) cancelAnimationFrame(raf);
-    raf = null;
-  }
-
-  let startTimer;
   const ro = new ResizeObserver(() => {
-    clearTimeout(startTimer);
-    reset();
-    startTimer = setTimeout(start, 200);
+    render();
   });
   ro.observe(host);
 
-  reset();
-  startTimer = setTimeout(start, 200);
+  render();
 }
 
-createVineGrowth(document.getElementsByClassName("sidebar")[0]);
+const host = document.getElementsByClassName("sidebar")[0];
+createVineGrowth(host);
