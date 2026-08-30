@@ -1,5 +1,12 @@
+// Handy math helpers
+const TAU = Math.PI * 2;
+const rnd = (a, b) => a + Math.random() * (b - a);
+const pick = (arr) => arr[(Math.random() * arr.length) | 0];
+const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
+
 function createVineGrowth(host) {
-  const defaultOptions = {
+  // Configuration parameters for the animation
+  const options = {
     background: "#eef0e2",
     paper: true,
     speed: 2.2,
@@ -13,10 +20,8 @@ function createVineGrowth(host) {
     seedFrom: "edges",
     originX: 0.4,
     spread: 0.5,
-    keepOut: {},
     keepOutForce: 320,
     maxTurn: 0.055,
-    fade: {},
     cellSize: 22,
     leafSpacing: 26,
     leafSize: 15,
@@ -37,7 +42,9 @@ function createVineGrowth(host) {
     ghostStem: ["#c6cfb9", "#cfd6c3", "#bdc8ae"],
     ghostLeaf: ["#cbd4be", "#d6dcc9", "#c0cbb1", "#dde1d2"],
   };
-  let options = { ...defaultOptions };
+
+  // Responsive state
+  let avoidEdge = {};
 
   /* ---------- canvases ------------------------------------------- */
 
@@ -45,26 +52,23 @@ function createVineGrowth(host) {
   if (getComputedStyle(host).position === "static")
     host.style.position = "relative";
 
-  const layers = ["source-over", "multiply"].map((blend) => {
+  const layers = ["normal", "multiply"].map((blend) => {
     const canvas = document.createElement("canvas");
     Object.assign(canvas.style, {
+      display: "block",
       position: "absolute",
       inset: "0",
       width: "100%",
-      height: "100%",
-      display: "block",
       pointerEvents: "none",
       mixBlendMode: blend,
     });
     host.appendChild(canvas);
-    return { canvas, ctx: canvas.getContext("2d") };
+    const ctx = canvas.getContext("2d");
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    return { canvas, ctx };
   });
   const [{ ctx: bg }, { ctx: fg }] = layers;
-
-  const TAU = Math.PI * 2;
-  const rnd = (a, b) => a + Math.random() * (b - a);
-  const pick = (arr) => arr[(Math.random() * arr.length) | 0];
-  const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
 
   const EDGES = [
     {
@@ -111,26 +115,14 @@ function createVineGrowth(host) {
     const r = host.getBoundingClientRect();
     W = Math.max(1, Math.round(r.width));
     H = Math.max(1, Math.round(r.height));
-
-    const responsiveOptions =
-      H > W
-        ? {
-            keepOut: { right: 0.4 },
-            fade: { right: 0.4 },
-          }
-        : {
-            keepOut: { bottom: 0.32 },
-            fade: { bottom: 0.32 },
-          };
-
-    options = Object.assign({}, defaultOptions, responsiveOptions);
     dpr = Math.min(2, window.devicePixelRatio || 1);
+
+    avoidEdge = H > W ? { right: 0.4 } : { bottom: 0.32 };
+
     for (const { canvas, ctx } of layers) {
       canvas.width = W * dpr;
       canvas.height = H * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.lineCap = "round";
-      ctx.lineJoin = "round";
     }
     cols = Math.ceil(W / options.cellSize);
     rows = Math.ceil(H / options.cellSize);
@@ -153,11 +145,10 @@ function createVineGrowth(host) {
       }
     }
     usableCells = Math.max(1, usableCells);
-    applyFade();
   }
 
   function applyFade() {
-    const f = options.fade || {};
+    const f = avoidEdge || {};
     const ramp = (dir, amt) =>
       `linear-gradient(to ${dir}, rgba(0,0,0,0) 0%, ` +
       `rgba(0,0,0,.4) ${Math.round(amt * 45)}%, rgba(0,0,0,1) ${Math.round(amt * 100)}%)`;
@@ -221,7 +212,7 @@ function createVineGrowth(host) {
   }
 
   function edgePressure(x, y) {
-    const K = options.keepOut;
+    const K = avoidEdge;
     const pos = { x, y },
       size = { x: W, y: H };
     let p = 0;
@@ -300,7 +291,7 @@ function createVineGrowth(host) {
 
   function spawnVine() {
     const mode = options.seedFrom;
-    const K = options.keepOut;
+    const K = avoidEdge;
     let x, y, a;
 
     if (mode === "scatter" || (mode === "edges" && Math.random() < 0.3)) {
@@ -709,6 +700,7 @@ function createVineGrowth(host) {
   function render() {
     stopAnimation();
     measure();
+    applyFade();
     paintPaper();
     fg.clearRect(0, 0, W, H);
     vines = [];
