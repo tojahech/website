@@ -8,6 +8,47 @@ const pick = (arr) => arr[(Math.random() * arr.length) | 0];
 const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
 
 //
+// Configuration parameters for the animation
+//
+
+const options = {
+  background: "#eef0e2",
+  paper: true,
+  speed: 2.2,
+  scale: 0.7,
+  startingVines: 4,
+  maxActiveVines: 10,
+  maxVines: 140,
+  coverage: 0.58,
+  ghostRatio: 0.46,
+  gravity: 0,
+  seedFrom: "edges",
+  originX: 0.4,
+  spread: 0.5,
+  keepOutForce: 320,
+  maxTurn: 0.055,
+  cellSize: 22,
+  leafSpacing: 26,
+  leafSize: 15,
+  leafShape: "mixed",
+  paleLeaves: 0.22,
+  stem: ["#6f7f5e", "#5c6d4e", "#7b8a68", "#4f6045"],
+  leaf: [
+    "#7d9366",
+    "#8fa678",
+    "#617a4f",
+    "#9fb188",
+    "#728a5c",
+    "#4d6340",
+    "#a3a37e",
+    "#8d8f66",
+    "#b3bb9c",
+  ],
+  ghostStem: ["#c6cfb9", "#cfd6c3", "#bdc8ae"],
+  ghostLeaf: ["#cbd4be", "#d6dcc9", "#c0cbb1", "#dde1d2"],
+};
+
+//
 // Setup HTML elements to host the animation
 //
 
@@ -46,7 +87,7 @@ function measureHost() {
   H = Math.max(1, Math.round(r.height));
   dpr = Math.min(2, window.devicePixelRatio || 1);
 
-  avoidEdge = H > W ? { right: 0.4 } : { bottom: 0.32 };
+  avoidEdge = H > W ? { right: 0.4 } : { bottom: 0.4 };
 
   for (const { canvas, ctx } of layers) {
     canvas.width = W * dpr;
@@ -76,79 +117,10 @@ function measureHost() {
   usableCells = Math.max(1, usableCells);
 }
 
-// Configuration parameters for the animation
-const options = {
-  background: "#eef0e2",
-  paper: true,
-  speed: 2.2,
-  scale: 0.7,
-  startingVines: 4,
-  maxActiveVines: 10,
-  maxVines: 140,
-  coverage: 0.58,
-  ghostRatio: 0.46,
-  gravity: 0,
-  seedFrom: "edges",
-  originX: 0.4,
-  spread: 0.5,
-  keepOutForce: 320,
-  maxTurn: 0.055,
-  cellSize: 22,
-  leafSpacing: 26,
-  leafSize: 15,
-  leafShape: "mixed",
-  paleLeaves: 0.22,
-  stem: ["#6f7f5e", "#5c6d4e", "#7b8a68", "#4f6045"],
-  leaf: [
-    "#7d9366",
-    "#8fa678",
-    "#617a4f",
-    "#9fb188",
-    "#728a5c",
-    "#4d6340",
-    "#a3a37e",
-    "#8d8f66",
-    "#b3bb9c",
-  ],
-  ghostStem: ["#c6cfb9", "#cfd6c3", "#bdc8ae"],
-  ghostLeaf: ["#cbd4be", "#d6dcc9", "#c0cbb1", "#dde1d2"],
-};
-
 // Responsive state
 let avoidEdge = {};
 
 /* ---------- canvases ------------------------------------------- */
-
-const EDGES = [
-  {
-    name: "top",
-    rampDir: "bottom",
-    axis: "y",
-    invert: true,
-    spawn: () => ({ x: seedX(), y: -14, a: Math.PI / 2 }),
-  },
-  {
-    name: "bottom",
-    rampDir: "top",
-    axis: "y",
-    invert: false,
-    spawn: () => ({ x: seedX(), y: H + 14, a: -Math.PI / 2 }),
-  },
-  {
-    name: "left",
-    rampDir: "right",
-    axis: "x",
-    invert: true,
-    spawn: () => ({ x: -14, y: rnd(0, H), a: 0 }),
-  },
-  {
-    name: "right",
-    rampDir: "left",
-    axis: "x",
-    invert: false,
-    spawn: () => ({ x: W + 14, y: rnd(0, H), a: Math.PI }),
-  },
-];
 
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -160,14 +132,16 @@ function applyFade() {
   const ramp = (dir, amt) =>
     `linear-gradient(to ${dir}, rgba(0,0,0,0) 0%, ` +
     `rgba(0,0,0,.4) ${Math.round(amt * 45)}%, rgba(0,0,0,1) ${Math.round(amt * 100)}%)`;
-  const grads = EDGES.filter(({ name }) => f[name]).map(({ name, rampDir }) =>
-    ramp(rampDir, f[name]),
-  );
+  const grads = [
+    f.top && ramp("bottom", f.top),
+    f.bottom && ramp("top", f.bottom),
+    f.left && ramp("right", f.left),
+    f.right && ramp("left", f.right),
+  ].filter(Boolean);
   const value = grads.join(", ");
   for (const { canvas } of layers) {
-    canvas.style.maskImage = canvas.style.webkitMaskImage = value;
+    canvas.style.maskImage = value;
     canvas.style.maskComposite = grads.length > 1 ? "intersect" : "";
-    canvas.style.webkitMaskComposite = grads.length > 1 ? "source-in" : "";
   }
 }
 
@@ -221,16 +195,22 @@ function mark(x, y, weight) {
 
 function edgePressure(x, y) {
   const K = avoidEdge;
-  const pos = { x, y },
-    size = { x: W, y: H };
   let p = 0;
-  for (const { name, axis, invert } of EDGES) {
-    const k = K[name];
-    if (!k) continue;
-    const S = size[axis];
-    const t = invert
-      ? (S * k - pos[axis]) / (S * k)
-      : (pos[axis] - S * (1 - k)) / (S * k);
+
+  if (K.top) {
+    const t = (H * K.top - y) / (H * K.top);
+    if (t > 0) p += t * t * options.keepOutForce;
+  }
+  if (K.bottom) {
+    const t = (y - H * (1 - K.bottom)) / (H * K.bottom);
+    if (t > 0) p += t * t * options.keepOutForce;
+  }
+  if (K.left) {
+    const t = (W * K.left - x) / (W * K.left);
+    if (t > 0) p += t * t * options.keepOutForce;
+  }
+  if (K.right) {
+    const t = (x - W * (1 - K.right)) / (W * K.right);
     if (t > 0) p += t * t * options.keepOutForce;
   }
   return p;
@@ -312,9 +292,15 @@ function spawnVine() {
     y = rnd(-30, -4);
     a = Math.PI / 2 + rnd(-0.6, 0.6) + (x > W * options.originX ? -0.25 : 0.25);
   } else {
-    const open = EDGES.filter(({ name }) => !K[name]);
-    const e = pick(open.length ? open : [EDGES[0]]);
-    ({ x, y, a } = e.spawn());
+    const open = [];
+    if (!K.top) open.push(() => ({ x: seedX(), y: -14, a: Math.PI / 2 }));
+    if (!K.bottom)
+      open.push(() => ({ x: seedX(), y: H + 14, a: -Math.PI / 2 }));
+    if (!K.left) open.push(() => ({ x: -14, y: rnd(0, H), a: 0 }));
+    if (!K.right) open.push(() => ({ x: W + 14, y: rnd(0, H), a: Math.PI }));
+    ({ x, y, a } = pick(
+      open.length ? open : [() => ({ x: seedX(), y: -14, a: Math.PI / 2 })],
+    )());
     a += rnd(-0.75, 0.75);
   }
 
