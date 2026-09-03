@@ -25,6 +25,7 @@ const options = {
   seedFrom: "edges",
   originX: 0.4,
   spread: 0.5,
+  edgeAvoidWeight: 0.4,
   keepOutForce: 320,
   maxTurn: 0.055,
   cellSize: 22,
@@ -79,21 +80,38 @@ const [{ ctx: bg }, { ctx: fg }] = layers;
 let W = 0;
 let H = 0;
 let dpr = 1;
-let grid, usable, usableCells, cols, rows, cellsTouched;
+let avoidEdge = "bottom";
 
+/**
+ * Measure the host element and update the canvas sizes accordingly.
+ * Sets global state for the size of the animation, used throughout the rendering logic.
+ */
 function measureHost() {
   const r = hostElement.getBoundingClientRect();
   W = Math.max(1, Math.round(r.width));
   H = Math.max(1, Math.round(r.height));
   dpr = Math.min(2, window.devicePixelRatio || 1);
 
-  avoidEdge = H > W ? { right: 0.4 } : { bottom: 0.4 };
+  avoidEdge = H > W ? "right" : "bottom";
 
   for (const { canvas, ctx } of layers) {
     canvas.width = W * dpr;
     canvas.height = H * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
+}
+
+//
+// Occupancy grid
+//
+
+let grid, usable, usableCells, cols, rows, cellsTouched;
+
+/**
+ * Divide the canvas into a grid of cells.
+ * Used to control the direction, spread, and density of vine growth.
+ */
+function computeGrid() {
   cols = Math.ceil(W / options.cellSize);
   rows = Math.ceil(H / options.cellSize);
   grid = new Uint16Array(cols * rows);
@@ -117,35 +135,92 @@ function measureHost() {
   usableCells = Math.max(1, usableCells);
 }
 
-// Responsive state
-let avoidEdge = {};
+/**
+ * Mark a cell in the occupancy grid as occupied by a vine.
+ */
+function markCell(x, y, weight) {
+  const cellX = (x / options.cellSize) | 0;
+  const cellY = (y / options.cellSize) | 0;
+  if (cellX < 0 || cellY < 0 || cellX >= cols || cellY >= rows) return;
+  const i = cellY * cols + cellX;
+  if (grid[i] === 0 && usable[i]) cellsTouched++;
+  grid[i] = Math.min(600, grid[i] + weight);
+}
 
-/* ---------- canvases ------------------------------------------- */
+/**
+ * Additional 'density' applied near the specific edge of the canvas that neighbours the rest of the page.
+ * Encourages vines to grow away from this edge, creating a smoother transtion to the page content.
+ */
+function edgePressure(x, y) {
+  const size = avoidEdge === "bottom" ? H : W;
+  const position = avoidEdge === "bottom" ? y : x;
+  const weight = options.edgeAvoidWeight;
+  const t = (position - size * (1 - weight)) / (size * weight);
+  return t > 0 ? t * t * options.keepOutForce : 0;
+}
 
-const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+/**
+ * Compute the density of vines at a given point on the canvas.
+ */
+function density(x, y) {
+  if (x < 0 || y < 0 || x > W || y > H) return 900;
+  const cx = (x / options.cellSize) | 0;
+  const cy = (y / options.cellSize) | 0;
+  return grid[cy * cols + cx] + edgePressure(x, y);
+}
 
-let vines = [],
-  born = 0;
+function seedX() {
+  const t = (Math.random() + Math.random()) / 2;
+  return W * (options.originX + (t - 0.5) * options.spread);
+}
 
-function applyFade() {
-  const f = avoidEdge || {};
+/**
+ * Find an random empty spot in the canvas / occupancy grid.
+ */
+function emptySpot() {
+  const sampleSteps = 40;
+  let spot = null;
+  let spotDensity = Infinity;
+  for (let i = 0; i < sampleSteps; i++) {
+    const x = seedX();
+    const y = rnd(H * 0.05, H * 0.95);
+    const d = density(x, y);
+    if (d < spotDensity) {
+      spot = { x, y };
+      spotDensity = d;
+    }
+  }
+  return spot;
+}
+
+const coverage = () => cellsTouched / usableCells;
+
+//
+// Rendering different pieces of the animation
+//
+
+/**
+ * Soft gradient fade towards the edge of the canvas.
+ * Strengthens the soft transition between the animation and the page content
+ */
+function drawFade() {
   const ramp = (dir, amt) =>
     `linear-gradient(to ${dir}, rgba(0,0,0,0) 0%, ` +
     `rgba(0,0,0,.4) ${Math.round(amt * 45)}%, rgba(0,0,0,1) ${Math.round(amt * 100)}%)`;
-  const grads = [
-    f.top && ramp("bottom", f.top),
-    f.bottom && ramp("top", f.bottom),
-    f.left && ramp("right", f.left),
-    f.right && ramp("left", f.right),
-  ].filter(Boolean);
-  const value = grads.join(", ");
+  const value = ramp(
+    avoidEdge === "bottom" ? "top" : "left",
+    options.edgeAvoidWeight,
+  );
   for (const { canvas } of layers) {
     canvas.style.maskImage = value;
-    canvas.style.maskComposite = grads.length > 1 ? "intersect" : "";
+    canvas.style.maskComposite = "";
   }
 }
 
-function paintPaper() {
+/**
+ * Mottled paper texture behind the vines.
+ */
+function drawPaper() {
   bg.save();
   bg.fillStyle = options.background;
   bg.fillRect(0, 0, W, H);
@@ -181,139 +256,6 @@ function paintPaper() {
     bg.fillRect(0, 0, W, H);
   }
   bg.restore();
-}
-
-/* ---------- occupancy grid: how the pattern learns to fill ------ */
-function mark(x, y, weight) {
-  const cx = (x / options.cellSize) | 0,
-    cy = (y / options.cellSize) | 0;
-  if (cx < 0 || cy < 0 || cx >= cols || cy >= rows) return;
-  const i = cy * cols + cx;
-  if (grid[i] === 0 && usable[i]) cellsTouched++;
-  grid[i] = Math.min(600, grid[i] + weight);
-}
-
-function edgePressure(x, y) {
-  const K = avoidEdge;
-  let p = 0;
-
-  if (K.top) {
-    const t = (H * K.top - y) / (H * K.top);
-    if (t > 0) p += t * t * options.keepOutForce;
-  }
-  if (K.bottom) {
-    const t = (y - H * (1 - K.bottom)) / (H * K.bottom);
-    if (t > 0) p += t * t * options.keepOutForce;
-  }
-  if (K.left) {
-    const t = (W * K.left - x) / (W * K.left);
-    if (t > 0) p += t * t * options.keepOutForce;
-  }
-  if (K.right) {
-    const t = (x - W * (1 - K.right)) / (W * K.right);
-    if (t > 0) p += t * t * options.keepOutForce;
-  }
-  return p;
-}
-
-function density(x, y) {
-  // Outside the box counts as very crowded, so vines curl back inwards.
-  const m = 12;
-  if (x < -m || y < -m || x > W + m || y > H + m) return 900;
-  const cx = clamp((x / options.cellSize) | 0, 0, cols - 1);
-  const cy = clamp((y / options.cellSize) | 0, 0, rows - 1);
-  return grid[cy * cols + cx] + edgePressure(x, y);
-}
-
-// Triangular distribution: seeds cluster around originX and thin out.
-function seedX() {
-  const t = (Math.random() + Math.random()) / 2;
-  return W * (options.originX + (t - 0.5) * options.spread);
-}
-
-function emptySpot() {
-  let best = null,
-    bestD = Infinity;
-  for (let i = 0; i < 40; i++) {
-    const x = seedX(),
-      y = rnd(H * 0.05, H * 0.95);
-    const d = density(x, y);
-    if (d < bestD) {
-      bestD = d;
-      best = { x, y };
-    }
-  }
-  return best;
-}
-
-const coverage = () => cellsTouched / usableCells;
-
-/* ---------- botany --------------------------------------------- */
-function makeVine(x, y, angle, opt) {
-  const ghost = opt.ghost;
-  return {
-    x,
-    y,
-    angle,
-    px: x,
-    py: y,
-    ghost,
-    ctx: ghost ? bg : fg,
-    life: 0,
-    span: opt.span,
-    width: opt.width,
-    gen: opt.gen,
-    wander: rnd(-0.02, 0.02),
-    side: Math.random() < 0.5 ? 1 : -1,
-    nextLeaf: rnd(6, options.leafSpacing),
-    curlUntil: 0,
-    curlDir: 1,
-    curlAmt: 0,
-    stemCol: pick(ghost ? options.ghostStem : options.stem),
-    leafCol: pick(ghost ? options.ghostLeaf : options.leaf),
-    leafAlt: pick(ghost ? options.ghostLeaf : options.leaf),
-    alpha: ghost ? rnd(0.28, 0.5) : rnd(0.72, 0.92),
-    leafScale: rnd(0.8, 1.25) * options.scale,
-  };
-}
-
-function spawnVine() {
-  const mode = options.seedFrom;
-  const K = avoidEdge;
-  let x, y, a;
-
-  if (mode === "scatter" || (mode === "edges" && Math.random() < 0.3)) {
-    const p = emptySpot();
-    x = p.x;
-    y = p.y;
-    a = rnd(0, TAU);
-  } else if (mode === "top") {
-    x = seedX();
-    y = rnd(-30, -4);
-    a = Math.PI / 2 + rnd(-0.6, 0.6) + (x > W * options.originX ? -0.25 : 0.25);
-  } else {
-    const open = [];
-    if (!K.top) open.push(() => ({ x: seedX(), y: -14, a: Math.PI / 2 }));
-    if (!K.bottom)
-      open.push(() => ({ x: seedX(), y: H + 14, a: -Math.PI / 2 }));
-    if (!K.left) open.push(() => ({ x: -14, y: rnd(0, H), a: 0 }));
-    if (!K.right) open.push(() => ({ x: W + 14, y: rnd(0, H), a: Math.PI }));
-    ({ x, y, a } = pick(
-      open.length ? open : [() => ({ x: seedX(), y: -14, a: Math.PI / 2 })],
-    )());
-    a += rnd(-0.75, 0.75);
-  }
-
-  const ghost = Math.random() < options.ghostRatio;
-  vines.push(
-    makeVine(x, y, a, {
-      ghost,
-      gen: 0,
-      span: rnd(320, 900) * (ghost ? 1.15 : 1),
-      width: rnd(1.5, 2.6) * options.scale * (ghost ? 0.8 : 1),
-    }),
-  );
-  born++;
 }
 
 function drawSimpleLeaf({
@@ -509,8 +451,85 @@ function drawBuds(v, x, y, angle, size) {
   }
 }
 
-/* ---------- one growth step for one vine ------------------------ */
-function grow(v) {
+//
+// State for active vines
+//
+
+let vines = [];
+let born = 0;
+
+function makeVine(x, y, angle, opt) {
+  const ghost = opt.ghost;
+  return {
+    x,
+    y,
+    angle,
+    px: x,
+    py: y,
+    ghost,
+    ctx: ghost ? bg : fg,
+    life: 0,
+    span: opt.span,
+    width: opt.width,
+    gen: opt.gen,
+    wander: rnd(-0.02, 0.02),
+    side: Math.random() < 0.5 ? 1 : -1,
+    nextLeaf: rnd(6, options.leafSpacing),
+    curlUntil: 0,
+    curlDir: 1,
+    curlAmt: 0,
+    stemCol: pick(ghost ? options.ghostStem : options.stem),
+    leafCol: pick(ghost ? options.ghostLeaf : options.leaf),
+    leafAlt: pick(ghost ? options.ghostLeaf : options.leaf),
+    alpha: ghost ? rnd(0.28, 0.5) : rnd(0.72, 0.92),
+    leafScale: rnd(0.8, 1.25) * options.scale,
+  };
+}
+
+function spawnVine() {
+  const mode = options.seedFrom;
+  let x, y, a;
+
+  if (mode === "scatter" || (mode === "edges" && Math.random() < 0.3)) {
+    const p = emptySpot();
+    x = p.x;
+    y = p.y;
+    a = rnd(0, TAU);
+  } else if (mode === "top") {
+    x = seedX();
+    y = rnd(-30, -4);
+    a = Math.PI / 2 + rnd(-0.6, 0.6) + (x > W * options.originX ? -0.25 : 0.25);
+  } else {
+    const spawn = pick(
+      avoidEdge === "bottom"
+        ? [
+            () => ({ x: seedX(), y: -14, a: Math.PI / 2 }),
+            () => ({ x: -14, y: rnd(0, H), a: 0 }),
+            () => ({ x: W + 14, y: rnd(0, H), a: Math.PI }),
+          ]
+        : [
+            () => ({ x: seedX(), y: -14, a: Math.PI / 2 }),
+            () => ({ x: seedX(), y: H + 14, a: -Math.PI / 2 }),
+            () => ({ x: -14, y: rnd(0, H), a: 0 }),
+          ],
+    );
+    ({ x, y, a } = spawn());
+    a += rnd(-0.75, 0.75);
+  }
+
+  const ghost = Math.random() < options.ghostRatio;
+  vines.push(
+    makeVine(x, y, a, {
+      ghost,
+      gen: 0,
+      span: rnd(320, 900) * (ghost ? 1.15 : 1),
+      width: rnd(1.5, 2.6) * options.scale * (ghost ? 0.8 : 1),
+    }),
+  );
+  born++;
+}
+
+function growVine(v) {
   const t = v.life / v.span; // 0 at the root, 1 at the tip
   const taper = Math.pow(1 - t, 0.55);
   const w = Math.max(0.35, v.width * taper);
@@ -571,7 +590,7 @@ function grow(v) {
   ctx.lineTo(v.x, v.y);
   ctx.stroke();
   ctx.globalAlpha = 1;
-  mark(v.x, v.y, 3);
+  markCell(v.x, v.y, 3);
 
   /* foliage */
   if (v.life >= v.nextLeaf) {
@@ -599,7 +618,7 @@ function grow(v) {
         });
       }
     }
-    mark(v.x, v.y, 6);
+    markCell(v.x, v.y, 6);
     v.side *= -1;
     v.nextLeaf = v.life + options.leafSpacing * options.scale * rnd(0.65, 1.4);
   }
@@ -634,18 +653,19 @@ function grow(v) {
 //
 // Animation controller
 //
+
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const animationSteps = reduceMotion ? 400 : 1;
 const animationDelay = 200;
 
-//  State
 let currentFrame = null;
 let isRunning = false;
 let isFinished = false;
 let startTimer;
 
-/* ---------- loop ------------------------------------------------ */
 function tick() {
   for (let i = vines.length - 1; i >= 0; i--) {
-    if (!grow(vines[i])) vines.splice(i, 1);
+    if (!growVine(vines[i])) vines.splice(i, 1);
   }
   const roomToGrow = coverage() < options.coverage && born < options.maxVines;
   if (roomToGrow && vines.length < options.maxActiveVines) spawnVine();
@@ -653,8 +673,7 @@ function tick() {
 }
 
 function frame() {
-  const steps = reduceMotion ? 400 : 1;
-  for (let i = 0; i < steps && !isFinished; i++) tick();
+  for (let i = 0; i < animationSteps && !isFinished; i++) tick();
   if (isFinished) {
     isRunning = false;
     currentFrame = null;
@@ -663,7 +682,6 @@ function frame() {
   currentFrame = requestAnimationFrame(frame);
 }
 
-/* ---------- api -------------------------------------------------- */
 function stopAnimation() {
   isRunning = false;
   if (currentFrame) cancelAnimationFrame(currentFrame);
@@ -682,9 +700,11 @@ function startAnimation() {
 function render() {
   stopAnimation();
   measureHost();
-  applyFade();
-  paintPaper();
+  computeGrid();
+  bg.clearRect(0, 0, W, H);
   fg.clearRect(0, 0, W, H);
+  drawFade();
+  drawPaper();
   vines = [];
   born = 0;
   isFinished = false;
@@ -699,12 +719,3 @@ const ro = new ResizeObserver(() => {
 ro.observe(hostElement);
 
 render();
-
-//
-// Pseudocode version
-//
-
-// 1. Define config
-// 2. Grab host container
-// 3. Setup canvases on host (return canvas + context)
-// 4. Animate (given fg, bg, config)
