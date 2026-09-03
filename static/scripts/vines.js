@@ -13,7 +13,6 @@ const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
 
 const options = {
   background: "#eef0e2",
-  paper: true,
   speed: 2.2,
   scale: 0.7,
   startingVines: 4,
@@ -22,7 +21,6 @@ const options = {
   coverage: 0.58,
   ghostRatio: 0.46,
   gravity: 0,
-  seedFrom: "edges",
   originX: 0.4,
   spread: 0.5,
   edgeAvoidWeight: 0.4,
@@ -31,7 +29,6 @@ const options = {
   cellSize: 22,
   leafSpacing: 26,
   leafSize: 15,
-  leafShape: "mixed",
   paleLeaves: 0.22,
   stem: ["#6f7f5e", "#5c6d4e", "#7b8a68", "#4f6045"],
   leaf: [
@@ -222,38 +219,22 @@ function drawFade() {
  */
 function drawPaper() {
   bg.save();
+
+  // Base colour
   bg.fillStyle = options.background;
   bg.fillRect(0, 0, W, H);
-  if (options.paper) {
-    // soft mottling
-    for (let i = 0; i < 26; i++) {
-      const x = rnd(0, W),
-        y = rnd(0, H),
-        r = rnd(60, Math.max(120, W * 0.35));
-      const g = bg.createRadialGradient(x, y, 0, x, y, r);
-      const light = Math.random() < 0.5;
-      g.addColorStop(
-        0,
-        light ? "rgba(255,255,255,.5)" : "rgba(150,152,130,.16)",
-      );
-      g.addColorStop(1, "rgba(255,255,255,0)");
-      bg.fillStyle = g;
-      bg.fillRect(x - r, y - r, r * 2, r * 2);
-    }
-    // fine grain, tiled
-    const n = document.createElement("canvas");
-    n.width = n.height = 128;
-    const nctx = n.getContext("2d");
-    const img = nctx.createImageData(128, 128);
-    for (let i = 0; i < img.data.length; i += 4) {
-      const v = 128 + (Math.random() - 0.5) * 90;
-      img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
-      img.data[i + 3] = 255;
-    }
-    nctx.putImageData(img, 0, 0);
-    bg.globalAlpha = 0.05;
-    bg.fillStyle = bg.createPattern(n, "repeat");
-    bg.fillRect(0, 0, W, H);
+
+  // Soft mottling over the top
+  for (let i = 0; i < 26; i++) {
+    const x = rnd(0, W),
+      y = rnd(0, H),
+      r = rnd(60, Math.max(120, W * 0.35));
+    const g = bg.createRadialGradient(x, y, 0, x, y, r);
+    const light = Math.random() < 0.5;
+    g.addColorStop(0, light ? "rgba(255,255,255,.5)" : "rgba(150,152,130,.16)");
+    g.addColorStop(1, "rgba(255,255,255,0)");
+    bg.fillStyle = g;
+    bg.fillRect(x - r, y - r, r * 2, r * 2);
   }
   bg.restore();
 }
@@ -293,31 +274,26 @@ function drawSimpleLeaf({
   ctx.restore();
 }
 
-/* ---------- lobed leaves ---------------------------------------- *
- * A leaf is a run of alternating lobe tips and sinuses, measured as
- * (angle from the midrib, radius as a fraction of length). Even
- * entries are tips, odd entries are the notches between them.
- * ---------------------------------------------------------------- */
-const LOBES = {
-  3: [
-    [0, 1],
-    [0.4, 0.46],
-    [0.82, 0.7],
-    [1.24, 0.34],
-    [1.6, 0.25],
-  ],
-  5: [
-    [0, 1],
-    [0.26, 0.52],
-    [0.56, 0.82],
-    [0.88, 0.42],
-    [1.18, 0.54],
-    [1.52, 0.27],
-  ],
-};
-
 function leafOutline(len, wid, lobes, jit, curve) {
-  const prof = LOBES[lobes] || LOBES[3];
+  const leafShapes = {
+    3: [
+      [0, 1],
+      [0.4, 0.46],
+      [0.82, 0.7],
+      [1.24, 0.34],
+      [1.6, 0.25],
+    ],
+    5: [
+      [0, 1],
+      [0.26, 0.52],
+      [0.56, 0.82],
+      [0.88, 0.42],
+      [1.18, 0.54],
+      [1.52, 0.27],
+    ],
+  };
+
+  const prof = leafShapes[lobes] || leafShapes[3];
   const ys = wid / (0.5 * len); // how fat the blade sits on the midrib
   const right = [],
     left = [],
@@ -367,11 +343,10 @@ function shade(hex, f) {
 
 function drawLeaf(leaf) {
   const { ctx, x, y, angle, len, wid, curve, colA, colB, alpha } = leaf;
-  if (
-    options.leafShape === "ovate" ||
-    (options.leafShape === "mixed" && Math.random() < 0.4) ||
-    len < options.leafSize * options.scale * 0.42
-  ) {
+
+  // Draw some proportion as simple leaves
+  // Also for leaves that are too small for the detail to matter
+  if (Math.random() < 0.3 || len < options.leafSize * options.scale * 0.42) {
     return drawSimpleLeaf(leaf);
   }
 
@@ -487,18 +462,13 @@ function makeVine(x, y, angle, opt) {
 }
 
 function spawnVine() {
-  const mode = options.seedFrom;
   let x, y, a;
 
-  if (mode === "scatter" || (mode === "edges" && Math.random() < 0.3)) {
+  if (Math.random() < 0.4) {
     const p = emptySpot();
     x = p.x;
     y = p.y;
     a = rnd(0, TAU);
-  } else if (mode === "top") {
-    x = seedX();
-    y = rnd(-30, -4);
-    a = Math.PI / 2 + rnd(-0.6, 0.6) + (x > W * options.originX ? -0.25 : 0.25);
   } else {
     const spawn = pick(
       avoidEdge === "bottom"
