@@ -1,0 +1,691 @@
+//
+// Handy math helpers
+//
+
+const TAU = Math.PI * 2;
+const rnd = (a, b) => a + Math.random() * (b - a);
+const pick = (arr) => arr[(Math.random() * arr.length) | 0];
+const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
+
+//
+// Configuration parameters for the animation
+//
+
+const options = {
+  background: "#eef0e2",
+  speed: 2.2,
+  scale: 0.7,
+  startingVines: 4,
+  maxActiveVines: 10,
+  maxVines: 140,
+  coverage: 0.58,
+  ghostRatio: 0.46,
+  gravity: 0,
+  originX: 0.4,
+  spread: 0.5,
+  edgeAvoidWeight: 0.4,
+  keepOutForce: 320,
+  maxTurn: 0.055,
+  cellSize: 22,
+  leafSpacing: 26,
+  leafSize: 15,
+  paleLeaves: 0.22,
+  stem: ["#6f7f5e", "#5c6d4e", "#7b8a68", "#4f6045"],
+  leaf: [
+    "#7d9366",
+    "#8fa678",
+    "#617a4f",
+    "#9fb188",
+    "#728a5c",
+    "#4d6340",
+    "#a3a37e",
+    "#8d8f66",
+    "#b3bb9c",
+  ],
+  ghostStem: ["#c6cfb9", "#cfd6c3", "#bdc8ae"],
+  ghostLeaf: ["#cbd4be", "#d6dcc9", "#c0cbb1", "#dde1d2"],
+};
+
+//
+// Setup HTML elements to host the animation
+//
+
+const hostElement = document.getElementsByClassName("sidebar")[0];
+
+// If the host element has static position, we will not be able to overlay the canvases below using absolute positioning
+if (getComputedStyle(hostElement).position === "static")
+  hostElement.style.position = "relative";
+
+const layers = ["normal", "multiply"].map((blend) => {
+  const canvas = document.createElement("canvas");
+  Object.assign(canvas.style, {
+    display: "block",
+    position: "absolute",
+    inset: "0",
+    width: "100%",
+    pointerEvents: "none",
+    mixBlendMode: blend,
+  });
+  hostElement.appendChild(canvas);
+  const ctx = canvas.getContext("2d");
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  return { canvas, ctx };
+});
+const [{ ctx: bg }, { ctx: fg }] = layers;
+
+let W = 0;
+let H = 0;
+let dpr = 1;
+let avoidEdge = "bottom";
+
+/**
+ * Measure the host element and update the canvas sizes accordingly.
+ * Sets global state for the size of the animation, used throughout the rendering logic.
+ */
+function measureHost() {
+  const r = hostElement.getBoundingClientRect();
+  W = Math.max(1, Math.round(r.width));
+  H = Math.max(1, Math.round(r.height));
+  dpr = Math.min(2, window.devicePixelRatio || 1);
+
+  avoidEdge = H > W ? "right" : "bottom";
+
+  for (const { canvas, ctx } of layers) {
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+}
+
+//
+// Occupancy grid
+//
+
+let grid, usable, usableCells, cols, rows, cellsTouched;
+
+/**
+ * Divide the canvas into a grid of cells.
+ * Used to control the direction, spread, and density of vine growth.
+ */
+function computeGrid() {
+  cols = Math.ceil(W / options.cellSize);
+  rows = Math.ceil(H / options.cellSize);
+  grid = new Uint16Array(cols * rows);
+  cellsTouched = 0;
+
+  // Cells inside a keep-out margin are not expected to fill, so they are
+  // left out of the coverage sum — otherwise growth never reaches target.
+  usable = new Uint8Array(cols * rows);
+  usableCells = 0;
+  for (let cy = 0; cy < rows; cy++) {
+    for (let cx = 0; cx < cols; cx++) {
+      const open =
+        edgePressure(
+          (cx + 0.5) * options.cellSize,
+          (cy + 0.5) * options.cellSize,
+        ) < 40;
+      usable[cy * cols + cx] = open ? 1 : 0;
+      if (open) usableCells++;
+    }
+  }
+  usableCells = Math.max(1, usableCells);
+}
+
+/**
+ * Mark a cell in the occupancy grid as occupied by a vine.
+ */
+function markCell(x, y, weight) {
+  const cellX = (x / options.cellSize) | 0;
+  const cellY = (y / options.cellSize) | 0;
+  if (cellX < 0 || cellY < 0 || cellX >= cols || cellY >= rows) return;
+  const i = cellY * cols + cellX;
+  if (grid[i] === 0 && usable[i]) cellsTouched++;
+  grid[i] = Math.min(600, grid[i] + weight);
+}
+
+/**
+ * Additional 'density' applied near the specific edge of the canvas that neighbours the rest of the page.
+ * Encourages vines to grow away from this edge, creating a smoother transtion to the page content.
+ */
+function edgePressure(x, y) {
+  const size = avoidEdge === "bottom" ? H : W;
+  const position = avoidEdge === "bottom" ? y : x;
+  const weight = options.edgeAvoidWeight;
+  const t = (position - size * (1 - weight)) / (size * weight);
+  return t > 0 ? t * t * options.keepOutForce : 0;
+}
+
+/**
+ * Compute the density of vines at a given point on the canvas.
+ */
+function density(x, y) {
+  if (x < 0 || y < 0 || x > W || y > H) return 900;
+  const cx = (x / options.cellSize) | 0;
+  const cy = (y / options.cellSize) | 0;
+  return grid[cy * cols + cx] + edgePressure(x, y);
+}
+
+function seedX() {
+  const t = (Math.random() + Math.random()) / 2;
+  return W * (options.originX + (t - 0.5) * options.spread);
+}
+
+/**
+ * Find an random empty spot in the canvas / occupancy grid.
+ */
+function emptySpot() {
+  const sampleSteps = 40;
+  let spot = null;
+  let spotDensity = Infinity;
+  for (let i = 0; i < sampleSteps; i++) {
+    const x = seedX();
+    const y = rnd(H * 0.05, H * 0.95);
+    const d = density(x, y);
+    if (d < spotDensity) {
+      spot = { x, y };
+      spotDensity = d;
+    }
+  }
+  return spot;
+}
+
+const coverage = () => cellsTouched / usableCells;
+
+//
+// Rendering different pieces of the animation
+//
+
+/**
+ * Soft gradient fade towards the edge of the canvas.
+ * Strengthens the soft transition between the animation and the page content
+ */
+function drawFade() {
+  const ramp = (dir, amt) =>
+    `linear-gradient(to ${dir}, rgba(0,0,0,0) 0%, ` +
+    `rgba(0,0,0,.4) ${Math.round(amt * 45)}%, rgba(0,0,0,1) ${Math.round(amt * 100)}%)`;
+  const value = ramp(
+    avoidEdge === "bottom" ? "top" : "left",
+    options.edgeAvoidWeight,
+  );
+  for (const { canvas } of layers) {
+    canvas.style.maskImage = value;
+    canvas.style.maskComposite = "";
+  }
+}
+
+/**
+ * Mottled paper texture behind the vines.
+ */
+function drawPaper() {
+  bg.save();
+
+  // Base colour
+  bg.fillStyle = options.background;
+  bg.fillRect(0, 0, W, H);
+
+  // Soft mottling over the top
+  for (let i = 0; i < 26; i++) {
+    const x = rnd(0, W),
+      y = rnd(0, H),
+      r = rnd(60, Math.max(120, W * 0.35));
+    const g = bg.createRadialGradient(x, y, 0, x, y, r);
+    const light = Math.random() < 0.5;
+    g.addColorStop(0, light ? "rgba(255,255,255,.5)" : "rgba(150,152,130,.16)");
+    g.addColorStop(1, "rgba(255,255,255,0)");
+    bg.fillStyle = g;
+    bg.fillRect(x - r, y - r, r * 2, r * 2);
+  }
+  bg.restore();
+}
+
+function drawSimpleLeaf({
+  ctx,
+  x,
+  y,
+  angle,
+  len,
+  wid,
+  curve,
+  colA,
+  colB,
+  alpha,
+}) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+  const g = ctx.createLinearGradient(0, 0, len, 0);
+  g.addColorStop(0, colB);
+  g.addColorStop(1, colA);
+  ctx.globalAlpha = alpha;
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.quadraticCurveTo(len * 0.34, -wid + curve, len, curve * 0.6);
+  ctx.quadraticCurveTo(len * 0.34, wid + curve, 0, 0);
+  ctx.fillStyle = g;
+  ctx.fill();
+  ctx.globalAlpha = alpha * 0.4;
+  ctx.strokeStyle = colA;
+  ctx.lineWidth = Math.max(0.4, wid * 0.1);
+  ctx.beginPath();
+  ctx.moveTo(len * 0.05, 0);
+  ctx.quadraticCurveTo(len * 0.5, curve * 0.7, len * 0.9, curve * 0.55);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function leafOutline(len, wid, lobes, jit, curve) {
+  const leafShapes = {
+    3: [
+      [0, 1],
+      [0.4, 0.46],
+      [0.82, 0.7],
+      [1.24, 0.34],
+      [1.6, 0.25],
+    ],
+    5: [
+      [0, 1],
+      [0.26, 0.52],
+      [0.56, 0.82],
+      [0.88, 0.42],
+      [1.18, 0.54],
+      [1.52, 0.27],
+    ],
+  };
+
+  const prof = leafShapes[lobes] || leafShapes[3];
+  const ys = wid / (0.5 * len); // how fat the blade sits on the midrib
+  const right = [],
+    left = [],
+    tips = [];
+
+  for (let i = 0; i < prof.length; i++) {
+    for (const s of i === 0 ? [1] : [1, -1]) {
+      const r = prof[i][1] * len * (1 + rnd(-jit, jit));
+      const a = prof[i][0] * (1 + rnd(-jit, jit) * 1.6);
+      const p = {
+        x: Math.cos(a) * r,
+        y: Math.sin(a) * r * ys * s + curve * (r / len),
+      };
+      (s === 1 ? right : left).push(p);
+      if (i % 2 === 0) tips.push(p);
+    }
+  }
+  // tip -> down one side -> leaf base -> back up the other side
+  return {
+    pts: right.concat([{ x: 0, y: curve * 0.15 }], left.reverse()),
+    tips,
+  };
+}
+
+// Smooth a closed polyline: each point becomes a curve control, so lobe
+// tips round off the way a wet brush leaves them.
+function tracePath(ctx, pts) {
+  const n = pts.length;
+  const mx = (a, b) => (a.x + b.x) / 2,
+    my = (a, b) => (a.y + b.y) / 2;
+  ctx.beginPath();
+  ctx.moveTo(mx(pts[n - 1], pts[0]), my(pts[n - 1], pts[0]));
+  for (let i = 0; i < n; i++) {
+    const p = pts[i],
+      q = pts[(i + 1) % n];
+    ctx.quadraticCurveTo(p.x, p.y, mx(p, q), my(p, q));
+  }
+  ctx.closePath();
+}
+
+function shade(hex, f) {
+  const [r, g, b] = [1, 3, 5].map((i) =>
+    Math.round(parseInt(hex.slice(i, i + 2), 16) * f),
+  );
+  return `rgb(${r},${g},${b})`;
+}
+
+function drawLeaf(leaf) {
+  const { ctx, x, y, angle, len, wid, curve, colA, colB, alpha } = leaf;
+
+  // Draw some proportion as simple leaves
+  // Also for leaves that are too small for the detail to matter
+  if (Math.random() < 0.3 || len < options.leafSize * options.scale * 0.42) {
+    return drawSimpleLeaf(leaf);
+  }
+
+  const lobes = Math.random() < 0.42 ? 5 : 3;
+  const stalk = len * rnd(0.14, 0.26);
+  const blade = len - stalk;
+  const { pts, tips } = leafOutline(blade, wid, lobes, rnd(0.06, 0.16), curve);
+  const dark = shade(colA, 0.72);
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+
+  ctx.globalAlpha = alpha * 0.8;
+  ctx.strokeStyle = dark;
+  ctx.lineWidth = Math.max(0.5, len * 0.035);
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.quadraticCurveTo(stalk * 0.6, curve * 0.2, stalk, curve * 0.15);
+  ctx.stroke();
+
+  ctx.translate(stalk, 0);
+
+  const g = ctx.createLinearGradient(0, -wid, blade, wid);
+  g.addColorStop(0, colB);
+  g.addColorStop(0.55, colA);
+  g.addColorStop(1, shade(colA, 0.88));
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = g;
+  tracePath(ctx, pts);
+  ctx.fill();
+
+  ctx.globalAlpha = alpha * 0.3;
+  ctx.strokeStyle = dark;
+  ctx.lineWidth = Math.max(0.4, blade * 0.035);
+  ctx.stroke();
+
+  ctx.globalAlpha = alpha * 0.16;
+  ctx.fillStyle = dark;
+  ctx.save();
+  ctx.translate(blade * 0.16, wid * rnd(-0.22, 0.22));
+  ctx.scale(rnd(0.5, 0.72), rnd(0.5, 0.72));
+  tracePath(ctx, pts);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.globalAlpha = alpha * 0.34;
+  ctx.strokeStyle = dark;
+  ctx.lineWidth = Math.max(0.35, blade * 0.022);
+  ctx.beginPath();
+  for (const t of tips) {
+    ctx.moveTo(0, curve * 0.1);
+    ctx.quadraticCurveTo(t.x * 0.45, t.y * 0.35, t.x * 0.86, t.y * 0.86);
+  }
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+function drawBuds(v, x, y, angle, size) {
+  const n = 2 + ((Math.random() * 3) | 0);
+  for (let i = 0; i < n; i++) {
+    const t = i / n;
+    const side = i % 2 ? 1 : -1;
+    drawSimpleLeaf({
+      ctx: v.ctx,
+      x: x + Math.cos(angle) * t * size * 2.2,
+      y: y + Math.sin(angle) * t * size * 2.2,
+      angle: angle + side * rnd(0.5, 0.9),
+      len: size * (0.42 - t * 0.12),
+      wid: size * 0.18,
+      curve: 0,
+      colA: v.leafCol,
+      colB: v.leafAlt,
+      alpha: v.alpha * 0.9,
+    });
+  }
+}
+
+//
+// State for active vines
+//
+
+let vines = [];
+let born = 0;
+
+function makeVine(x, y, angle, opt) {
+  const ghost = opt.ghost;
+  return {
+    x,
+    y,
+    angle,
+    px: x,
+    py: y,
+    ghost,
+    ctx: ghost ? bg : fg,
+    life: 0,
+    span: opt.span,
+    width: opt.width,
+    gen: opt.gen,
+    wander: rnd(-0.02, 0.02),
+    side: Math.random() < 0.5 ? 1 : -1,
+    nextLeaf: rnd(6, options.leafSpacing),
+    curlUntil: 0,
+    curlDir: 1,
+    curlAmt: 0,
+    stemCol: pick(ghost ? options.ghostStem : options.stem),
+    leafCol: pick(ghost ? options.ghostLeaf : options.leaf),
+    leafAlt: pick(ghost ? options.ghostLeaf : options.leaf),
+    alpha: ghost ? rnd(0.28, 0.5) : rnd(0.72, 0.92),
+    leafScale: rnd(0.8, 1.25) * options.scale,
+  };
+}
+
+function spawnVine() {
+  let x, y, a;
+
+  if (Math.random() < 0.4) {
+    const p = emptySpot();
+    x = p.x;
+    y = p.y;
+    a = rnd(0, TAU);
+  } else {
+    const spawn = pick(
+      avoidEdge === "bottom"
+        ? [
+            () => ({ x: seedX(), y: -14, a: Math.PI / 2 }),
+            () => ({ x: -14, y: rnd(0, H), a: 0 }),
+            () => ({ x: W + 14, y: rnd(0, H), a: Math.PI }),
+          ]
+        : [
+            () => ({ x: seedX(), y: -14, a: Math.PI / 2 }),
+            () => ({ x: seedX(), y: H + 14, a: -Math.PI / 2 }),
+            () => ({ x: -14, y: rnd(0, H), a: 0 }),
+          ],
+    );
+    ({ x, y, a } = spawn());
+    a += rnd(-0.75, 0.75);
+  }
+
+  const ghost = Math.random() < options.ghostRatio;
+  vines.push(
+    makeVine(x, y, a, {
+      ghost,
+      gen: 0,
+      span: rnd(320, 900) * (ghost ? 1.15 : 1),
+      width: rnd(1.5, 2.6) * options.scale * (ghost ? 0.8 : 1),
+    }),
+  );
+  born++;
+}
+
+function growVine(v) {
+  const t = v.life / v.span; // 0 at the root, 1 at the tip
+  const taper = Math.pow(1 - t, 0.55);
+  const w = Math.max(0.35, v.width * taper);
+
+  /* steering */
+  if (v.life > v.curlUntil) {
+    // wander: a slowly drifting turn rate gives long, calm arcs
+    v.wander = clamp(v.wander * 0.985 + rnd(-0.007, 0.007), -0.05, 0.05);
+
+    // look ahead three ways and lean towards open space
+    const look = 58;
+    const d = (off) =>
+      density(
+        v.x + Math.cos(v.angle + off) * look,
+        v.y + Math.sin(v.angle + off) * look,
+      );
+    const wL = 1 / (1 + d(-0.6)),
+      wC = 1.7 / (1 + d(0)),
+      wR = 1 / (1 + d(0.6));
+    const seek = (-0.6 * wL + 0.6 * wR) / (wL + wC + wR);
+
+    // A cap on turn rate is what keeps avoidance looking like a stem
+    // sweeping around rather than snapping back on itself.
+    v.angle += clamp(v.wander + seek * 0.4, -options.maxTurn, options.maxTurn);
+
+    if (options.gravity) {
+      // optional trailing/hanging bias
+      let diff = ((Math.PI / 2 - v.angle + Math.PI * 3) % TAU) - Math.PI;
+      v.angle += diff * 0.012 * options.gravity;
+    }
+
+    // now and then the stem throws a tendril curl
+    if (Math.random() < 0.006 && t < 0.8 && edgePressure(v.x, v.y) < 20) {
+      v.curlUntil = v.life + rnd(50, 130);
+      v.curlDir = Math.random() < 0.5 ? 1 : -1;
+      v.curlAmt = rnd(0.022, 0.05);
+    }
+  } else if (edgePressure(v.x, v.y) > 30) {
+    v.curlUntil = 0; // a curl still yields to a margin
+  } else {
+    v.angle += v.curlDir * v.curlAmt;
+  }
+
+  /* advance */
+  v.px = v.x;
+  v.py = v.y;
+  v.x += Math.cos(v.angle) * options.speed;
+  v.y += Math.sin(v.angle) * options.speed;
+  v.life += options.speed;
+
+  /* stem */
+  const ctx = v.ctx;
+  ctx.globalAlpha = v.alpha * (v.ghost ? 1 : 0.95);
+  ctx.strokeStyle = v.stemCol;
+  ctx.lineWidth = w;
+  ctx.beginPath();
+  ctx.moveTo(v.px, v.py);
+  ctx.lineTo(v.x, v.y);
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+  markCell(v.x, v.y, 3);
+
+  /* foliage */
+  if (v.life >= v.nextLeaf) {
+    const size = options.leafSize * v.leafScale * (0.45 + taper * 0.75);
+
+    if (Math.random() < 0.24) {
+      drawBuds(v, v.x, v.y, v.angle + v.side * rnd(0.4, 0.8), size);
+    } else {
+      const paired = Math.random() < 0.42;
+      const sides = paired ? [1, -1] : [v.side];
+      for (const s of sides) {
+        const len = size * rnd(0.8, 1.15);
+        const pale = !v.ghost && Math.random() < options.paleLeaves;
+        drawLeaf({
+          ctx: v.ctx,
+          x: v.x,
+          y: v.y,
+          angle: v.angle + s * rnd(0.6, 1.15),
+          len,
+          wid: len * rnd(0.44, 0.6),
+          curve: len * s * 0.12,
+          colA: pale ? pick(options.ghostLeaf) : v.leafCol,
+          colB: pale ? pick(options.ghostLeaf) : v.leafAlt,
+          alpha: pale ? v.alpha * 0.75 : v.alpha,
+        });
+      }
+    }
+    markCell(v.x, v.y, 6);
+    v.side *= -1;
+    v.nextLeaf = v.life + options.leafSpacing * options.scale * rnd(0.65, 1.4);
+  }
+
+  /* branch */
+  if (v.gen < 3 && t > 0.12 && t < 0.82 && Math.random() < 0.014) {
+    vines.push(
+      makeVine(
+        v.x,
+        v.y,
+        v.angle + (Math.random() < 0.5 ? 1 : -1) * rnd(0.5, 1.0),
+        {
+          ghost: v.ghost,
+          gen: v.gen + 1,
+          span: v.span * rnd(0.3, 0.6),
+          width: w * 0.75,
+        },
+      ),
+    );
+  }
+
+  /* death — the tip finishes in a cluster of new growth */
+  const gone = v.x < -60 || v.y < -60 || v.x > W + 60 || v.y > H + 60;
+  if (v.life >= v.span || gone) {
+    if (!gone)
+      drawBuds(v, v.x, v.y, v.angle, options.leafSize * v.leafScale * 0.8);
+    return false;
+  }
+  return true;
+}
+
+//
+// Animation controller
+//
+
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const animationSteps = reduceMotion ? 400 : 1;
+const animationDelay = 200;
+
+let currentFrame = null;
+let isRunning = false;
+let isFinished = false;
+let startTimer;
+
+function tick() {
+  for (let i = vines.length - 1; i >= 0; i--) {
+    if (!growVine(vines[i])) vines.splice(i, 1);
+  }
+  const roomToGrow = coverage() < options.coverage && born < options.maxVines;
+  if (roomToGrow && vines.length < options.maxActiveVines) spawnVine();
+  if (!roomToGrow && vines.length === 0) isFinished = true;
+}
+
+function frame() {
+  for (let i = 0; i < animationSteps && !isFinished; i++) tick();
+  if (isFinished) {
+    isRunning = false;
+    currentFrame = null;
+    return;
+  }
+  currentFrame = requestAnimationFrame(frame);
+}
+
+function stopAnimation() {
+  isRunning = false;
+  if (currentFrame) cancelAnimationFrame(currentFrame);
+  currentFrame = null;
+}
+
+function startAnimation() {
+  clearTimeout(startTimer);
+  startTimer = setTimeout(() => {
+    if (isRunning || isFinished) return;
+    isRunning = true;
+    currentFrame = requestAnimationFrame(frame);
+  }, animationDelay);
+}
+
+function render() {
+  stopAnimation();
+  measureHost();
+  computeGrid();
+  bg.clearRect(0, 0, W, H);
+  fg.clearRect(0, 0, W, H);
+  drawFade();
+  drawPaper();
+  vines = [];
+  born = 0;
+  isFinished = false;
+  const startingVines = Math.min(options.startingVines, options.maxActiveVines);
+  for (let i = 0; i < startingVines; i++) spawnVine();
+  startAnimation();
+}
+
+const ro = new ResizeObserver(() => {
+  render();
+});
+ro.observe(hostElement);
+
+render();
