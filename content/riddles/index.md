@@ -7,15 +7,15 @@ A collection of my favourite logic puzzles.
 Some of them are here because they're fiendishly difficult, others because the solution is in some sense 'cute'.
 Hover to see the solutions.
 
-## Simple and Cute
+# Simple and Cute
 
-### Cutting Wood (Very Easy)
+### Cutting Wood
 
 A lumberjack lives in a forest cutting logs with an axe.
 It takes him six minutes to chop a log into three pieces.
 How long would it take him to cut a log into five pieces?
 
-### Solution
+{% accordion(title="Solution") %}
 
 The obvious answer is ten minutes.
 Six minutes for three pieces means each piece takes two minutes.
@@ -31,7 +31,9 @@ So our forester needs three minutes for each cut with a total of twelve minutes.
 
 Of course, as with any riddle, it's easy to argue with the hypothetical but once it's pointed out the answer should be obviously correct.
 
-### Dynamite Fuse (Easy)
+{% end %}
+
+### Dynamite Fuse
 
 You are given two ropes, dosed in kerosene.
 One rope takes three minutes to burn end to end and the other four.
@@ -39,7 +41,7 @@ Unfortunately they are fairly ragged and don't burn at a steady pace.
 For example, half the rope wouldn't necessarily burn in half the time.
 How could you use these two ropes to time out five minutes?
 
-### Solution
+{% accordion(title="Solution") %}
 
 _This is a wonderful variation on the classic puzzles about filling water bottles of various sizes.
 That said it's not really about the maths, but rather the physical situation.
@@ -63,15 +65,17 @@ Light the four minute rope at both ends simultaneously.
 When the flames meet, light the three minute rope.
 After that has burnt through five minutes will have elapsed.
 
-## Visual Puzzles
+{% end %}
 
-### Four Lines (Easy)
+# Visual Puzzles
+
+### Four Lines
 
 Connect nine dots in a three by three grid with four straight lines, drawn end to end without taking your pen from the page.
 
 ![](out-of-box-1.png)
 
-### Solution
+{% accordion(title="Solution") %}
 
 _This one is a classic although rather simple.
 I like to pretend that this puzzle is where the expression 'think outside the box' comes from._
@@ -80,7 +84,9 @@ The trick is to draw the lines beyond the grid.
 
 ![](out-of-box-2.png)
 
-### Cubical Astronaut (Easy)
+{% end %}
+
+### Cubical Astronaut
 
 An astronaut has landed her spaceship on one corner of a strange cube-shaped moon.
 She has explored to the opposite corner but is beginning to run out of oxygen and needs to get back to the shuttle as quickly as possible.
@@ -88,7 +94,7 @@ What path should she take?
 
 ![](space1.png)
 
-### Solution
+{% accordion(title="Solution") %}
 
 _These sort of geometric problems are very easy in hindsight.
 Once you know the solution it's obvious, but when you don't..._
@@ -108,7 +114,9 @@ When you convert that back to the cube you find it gives a slightly unintuitive 
 
 ![](space4.png)
 
-### Bucketing (Easy)
+{% end %}
+
+### Bucketing
 
 A boy is standing in a field with a bucket.
 Nearby is a (dead straight) river and further away his home.
@@ -117,7 +125,7 @@ What's the shortest path he can take to do so?
 
 ![](river1.png)
 
-### Solution
+{% accordion(title="Solution") %}
 
 We can use a simple geometric trick to find the shortest path to the river and back.
 Again, the shortest path will be a straight line, but which one?
@@ -127,14 +135,16 @@ The shortest path to the reflected house is a straight line through the river, r
 
 ![](river2.png)
 
-### Division (Medium)
+{% end %}
+
+### Division
 
 Cut the following shape into two identical pieces.
 You don't have to follow the grid, it's just there to help visualise the area.
 
 ![](divide-1.png)
 
-### Solution
+{% accordion(title="Solution") %}
 
 The difficulty of this puzzle is working out how to match the concave and convex notches.
 Any cut is going to create a new notch of each type.
@@ -147,11 +157,13 @@ After that the answer to the original should come quickly.
 
 ![](divide-3.png)
 
-## Unintuition
+{% end %}
+
+# Unintuition
 
 These puzzles are great because it's easy to get stuck thinking about them in the 'wrong way'.
 
-### Chasm Crossing (Medium)
+### Chasm Crossing
 
 Four people are exploring a cave and hear a distant rockfall heading their way.
 To escape they must cross a precarious bridge over a nearby chasm.
@@ -161,7 +173,7 @@ Unfortunately the bridge is rather old and will only hold the weight of two peop
 Even worse, the cavers only have a single torch which they need to use while crossing the bridge.
 Can they make it?
 
-### Solution
+{% accordion(title="Solution") %}
 
 The intuitive answer is to use the fastest explorer to run the torch over and back but this takes 33 minutes.
 Once you notice the obvious approach it's rather tricky to get your mind thinking through other ideas.
@@ -174,6 +186,8 @@ If you make sure to send the two slowest people across the bridge together then 
 
 ![](chasm2.svg)
 
+{% end %}
+
 ### Coin Picking
 
 Let's play a game.
@@ -183,7 +197,7 @@ There are an even number of coins so we both end up with the same number of coin
 
 If I let you go first, is there a way you can guarantee to get at least as much money as I do?
 
-### Solution
+{% accordion(title="Solution") %}
 
 This is quite a fun puzzle.
 It's easy to generate ideas for potential algorithms that might maximise the value you get.
@@ -195,9 +209,11 @@ Count up the value of each group and then take the end coin from the group with 
 Now your opponent is forced to take a coin from the other group.
 At each step if you take an odd coin, then your opponent will have to take an even (or the other way around).
 
-## Fiendish Puzzles
+{% end %}
 
-### Circular Road (Hard)
+# Fiendish Puzzles
+
+### Circular Road
 
 _This is my absolute favourite puzzle.
 Fair warning, it's difficult!_
@@ -207,7 +223,7 @@ You have a car standing by, and distributed amongst the petrol stations and the 
 Is there a point on the road where you can start driving and complete the entire circle without running out of petrol?
 (Assuming filling up the car doesn't waste any fuel, you don't crash, the world is perfect, blah, blah.)
 
-### Solution
+{% accordion(title="Solution") %}
 
 Given the way that this question is worded, the answer is obviously yes.
 The real trick here is to give a compelling reason why.
@@ -251,7 +267,9 @@ Because there is exactly the right amount of fuel along the track, when you get 
 Look at a graph of the fuel in the tank over the entire course and choose any one of the minima.
 Starting at one of these points makes that minimal value your new 'zero' and so you can guarantee that you'll always have fuel in the tank for the whole drive.
 
-### My Number is 25 (Hard)
+{% end %}
+
+### My Number is 25
 
 Alice, Bob and Carrol are sitting in a circle with positive whole numbers drawn on their foreheads.
 They can each see the other's numbers but cannot see their own.
@@ -265,7 +283,7 @@ You observe the following strange conversation,
 
 What were the other two numbers?
 
-### Solution
+{% accordion(title="Solution") %}
 
 This is an awesome puzzle, but unfortunately I think it might be imposssible!
 There are two subtly different ways you can interpret the question "what were the other two numbers?"
@@ -318,3 +336,5 @@ We have no way of knowing that we've spotted everything, indeed there are at lea
 Alice may well have worked out her number using some logic we haven't even considered.
 
 I hope that there's a way to approach the problem directly which doesn't fall prey to this tacit assumption, but I'm leaning towards it being impossible.
+
+{% end %}
