@@ -2,18 +2,22 @@
 
 {% block layout %}
   <div class="layout layout-thirds {% if page.extra.layout_class %} {{ page.extra.layout_class }}{% endif %}">
-    <div class="sidebar-wrapper">
-    </div>
-    <div class="content-wrapper">
+    <div class="sidebar"></div>
+    <div class="content">
 
-      <header>
-        tojahech
-        <a href="/"><span class="icon" style="mask-image: url(/icons/home.svg)" /></a>
-        <a href="/lottery-of-fascinations"><span class="icon" style="mask-image: url(/icons/index.svg)" /></a>
-        <a href="/contact"><span class="icon" style="mask-image: url(/icons/contact.svg)" /></a>
-      </header>
+      <main>
 
-      {% block content %} {% endblock %}
+        <nav>
+          <span>tojahech</span>
+          •
+          <a href="/">home</a>
+          •
+          <a href="/lottery-of-fascinations">index</a>
+        </nav>
+
+        {% block content %} {% endblock %}
+
+      </main>
 
       <footer>
         © 2026 tojahech

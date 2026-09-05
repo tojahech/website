@@ -3,22 +3,22 @@
 {% block title %}{{ page.title }}{% endblock title %} 
 
 {% block content %}
-  <main class="full">
-    {% if page.title %}
-      <h1 class="title">{{ page.title }}</h1>
+
+  {% if page.title %}
+    <h1 class="title">{{ page.title }}</h1>
+  {% endif %}
+
+  {% set my_section = get_section(path="_index.md") %}
+
+  {% for post in my_section.pages %}
+    {% if not post.extra.hidden %}
+      <div class="menu-item">
+        <a href="{{ post.permalink }}">{{ post.title }}</a>
+        {{ post.description }}
+      </div> 
     {% endif %}
+  {% endfor %}
 
-    {% set my_section = get_section(path="_index.md") %}
+  {{ page.content | safe }}
 
-    {% for post in my_section.pages %}
-      {% if not post.extra.hidden %}
-        <div class="menu-item">
-          <a href="{{ post.permalink }}">{{ post.title }}</a>
-          {{ post.description }}
-        </div> 
-      {% endif %}
-    {% endfor %}
-
-    {{ page.content | safe }}
-  </main>
 {% endblock content %}
