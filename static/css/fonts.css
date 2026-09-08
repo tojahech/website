@@ -1,0 +1,15 @@
+@font-face {
+  font-family: "Alegreya";
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url(/fonts/alegreya.woff2) format("woff2");
+}
+
+@font-face {
+  font-family: "Lilita One";
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url(/fonts/lilita-one.woff2) format("woff2");
+}
