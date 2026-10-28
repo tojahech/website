@@ -10,7 +10,7 @@
   html {
     overscroll-behavior-y: none;
     font-size: var(--font-size-base);
-    font-family: var(--font-stack-serif);
+    font-family: var(--font-body);
     line-height: var(--line-height-text);
     background-color: var(--base-background);
     color: var(--base-foreground);
@@ -32,7 +32,7 @@
   h4,
   h5,
   h6 {
-    font-family: var(--font-stack-sans);
+    font-family: var(--font-header);
     font-variant: small-caps;
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-heading);
@@ -112,7 +112,7 @@
         align-items: center;
         gap: var(--spacing-1);
 
-        font-family: var(--font-stack-sans);
+        font-family: var(--font-header);
         font-size: var(--font-size-s);
         font-variant: small-caps;
         font-weight: var(--font-weight-light);
@@ -176,7 +176,7 @@
   /* Accordion */
   .accordion {
     summary {
-      font-family: var(--font-stack-sans);
+      font-family: var(--font-header);
       font-variant: small-caps;
       font-weight: var(--font-weight-bold);
       padding: var(--spacing-2);
