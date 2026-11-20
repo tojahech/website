@@ -34,7 +34,7 @@
   h6 {
     font-family: var(--font-header);
     font-variant: small-caps;
-    font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-medium);
     line-height: var(--line-height-heading);
     margin-top: var(--spacing-4);
     margin-bottom: var(--spacing-3);
